@@ -2,10 +2,10 @@ const mysql = require('mysql2');
 
 const pool = mysql.createConnection(
   {
-    host: '172.17.0.2',
+    host: 'localhost',
     user: 'root',
-    password: '6327',
-    database: 'SALAS_DB'
+    database: 'SALAS_DB',
+    port: '3307'
   });
 
 

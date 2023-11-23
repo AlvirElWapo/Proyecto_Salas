@@ -121,7 +121,34 @@ const Actualizar_lista_asistencias = (Id_Trab, Array_Asistencias, callback) => {
   );
 };
 
+// Función para obtener los parámetros desde la base de datos
+const obtenerParametros = async () => {
+  try {
+    const resultado = await pool.query('SELECT * FROM parametros');
+    const parametros = {};
+    
+    // Convertir los resultados en un objeto de parámetros
+    resultado.forEach(fila => {
+      parametros[fila.nombre_parametro] = fila.valor_parametro;
+    });
 
+    return parametros;
+  } catch (error) {
+    console.error('Error al obtener parámetros:', error);
+    throw error;
+  }
+};
+
+// Ruta para obtener los parámetros
+app.get('/parametros', async (req, res) => {
+  try {
+    const parametros = await obtenerParametros();
+    res.json(parametros);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 
 app.get('/areas', (req, res) => {
