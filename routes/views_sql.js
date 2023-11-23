@@ -1,5 +1,4 @@
 const express = require('express');
-const path = require('path');
 const db = require('../db/database_connection');
 
 const app = express()
@@ -70,6 +69,23 @@ const getEquiposByTrabId = (Id_Trab, callback) => {
   );
 };
 
+const getModeradoresByID= (Id_Mod, callback) => {
+  console.log(Id_Mod)
+  db.query(
+    'SELECT * FROM TABLA_MODERADORES WHERE ID_Mod =?',
+    [Id_Mod],
+    (err, sqlRes) => {
+      if (err) {
+        console.error(err);
+        callback("sql_error");
+      } else if (sqlRes.length > 0) {
+        callback(null, sqlRes);
+      } else {
+        callback("No data available for the specified ID_MODERADOR");
+      }
+    }
+  );
+};
 
 const getListaSedes = (callback) => {
   db.query(
@@ -82,6 +98,23 @@ const getListaSedes = (callback) => {
         callback(null, sqlRes);
       } else {
         callback("No data available for Salon");
+      }
+    }
+  );
+};
+
+const getTitulosByID = (Id_Trab, callback) => {
+  db.query(
+    'SELECT Titulo FROM PONENCIAS WHERE ID_Tra= ?;',
+    [Id_Trab],
+    (err, sqlRes) => {
+      if (err) {
+        console.error(err);
+        callback("sql_error");
+      } else if (sqlRes.length > 0) {
+        callback(null, sqlRes);
+      } else {
+        callback("No data available for the specified Id_Trab");
       }
     }
   );
@@ -121,8 +154,36 @@ const Actualizar_lista_asistencias = (Id_Trab, Array_Asistencias, callback) => {
   );
 };
 
+const Actualizar_lista_asistencias_Moderadores= (Id_Mod, Asistio, callback) => {
+  db.query(
+    'UPDATE MODERADORES SET Asistencia = ? WHERE ID_Mod = ?',
+    [Asistio, Id_Mod],
+    (updateErr, updateRes) => {
+      if (updateErr) {
+        console.error(updateErr);
+        callback("update_error");
+      } else {
+        callback(null, updateRes);
+      }
+    }
+  );
+};
 
-
+const GET_ID_MOD= (callback) => {
+  db.query(
+    'SELECT ID_Mod FROM MODERADORES',
+    (err, sqlRes) => {
+      if (err) {
+        console.error(err);
+        callback("sql_error");
+      } else if (sqlRes.length > 0) {
+        callback(null, sqlRes);
+      } else {
+        callback("No data available in ID_Tra view");
+      }
+    }
+  );
+};
 
 app.get('/areas', (req, res) => {
   getRingGraph((error, result) => {
@@ -173,6 +234,17 @@ app.get('/id_tras', (req, res) => {
   });
 });
 
+app.get('/id_mods', (req, res) => {
+  GET_ID_MOD((error, result) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    } else {
+      res.json(result);
+    }
+  });
+});
+
 app.get('/sedes', (req,res) => 
 {
   getListaSedes((error, result) => {
@@ -201,6 +273,21 @@ app.post('/informacion_por_salones', (req, res) => {
   });
 });
 
+
+app.post('/get_titulo', (req, res) => {
+  const { Salon } = req.body;
+  console.log(Salon);
+  getTitulosByID(Salon, (error, result) => 
+  {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    } else {
+      res.json(result);
+    }
+  });
+});
+
 app.post('/asistencia', (req, res) => {
   console.log("recieved asistencia request");
   const { Id_Trab, Asistencia } = req.body;
@@ -211,6 +298,36 @@ app.post('/asistencia', (req, res) => {
     res.json({ message: 'Successfully updated asistencia array.' });
   });
 });
+
+app.post('/asistencia_mods', (req, res) => {
+  console.log("recieved asistencia request");
+  const { ID_Mod, Asistencia } = req.body;
+  Actualizar_lista_asistencias_Moderadores(ID_Mod, Asistencia, (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err });
+    }
+    res.json({ message: 'Successfully updated asistencia array.' });
+  });
+});
+
+
+
+
+app.post('/informacion_de_moderadores', (req, res) => {
+  const { Id_Mod } = req.body;
+  console.log(Id_Mod);
+  getModeradoresByID(Id_Mod, (error, result) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+
+
 
 
 

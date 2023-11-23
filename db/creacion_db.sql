@@ -89,6 +89,10 @@ FROM PONENCIAS GROUP BY SEDE;
 CREATE VIEW USUARIOS_POR_SALAS AS 
 SELECT ID_Tra, NoPonentes, Ponentes, ID_Pons, Salon FROM PONENCIAS;
 
+CREATE VIEW TABLA_MODERADORES AS 
+SELECT ID_Mod, Moderador, Institucion FROM MODERADORES;
+
+ 
 --//////////////////////////////////////////////////////////--
 --∙∙·▫▫ᵒᴼᵒ▫ₒₒ▫ᵒᴼᵒ▫ₒₒ▫ᵒᴼᵒ ADICIÓN DE OBJETOS TEMPORALES ᵒᴼᵒ▫ₒₒ▫ᵒᴼᵒ▫ₒₒ▫ᵒᴼᵒ▫▫·∙∙--
 --//////////////////////////////////////////////////////////--
