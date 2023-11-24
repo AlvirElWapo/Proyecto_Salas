@@ -102,10 +102,8 @@ app.post('/Ponencia_inconclusa', (req, res) => {
   }
 });
 
-
 app.get('/salas_concluidas', (req, res) => {
   res.json(ponenciasFinalizadas);
 });
-
 
 module.exports = app;

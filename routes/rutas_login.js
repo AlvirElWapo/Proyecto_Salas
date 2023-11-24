@@ -5,23 +5,16 @@ const argon2 = require('argon2');
 
 const app = express()
 
-
-
-app.get('/',(req,res)=>{res.sendFile(path.join(__dirname, '../public/paginas/mainpage.html'))})
-
-// app.get('/login', (req, res) => {res.render('login');});
-
-app.get('/login', (req, res) => {res.sendFile(path.join(__dirname,'../public/paginas/login.html'))})
-
 app.post('/login', (req, res) => {
   const username_or_email = req.body.username;
   const password = req.body.password;
+
   get_pwd_hash(username_or_email, (err, pwd_hash_res) => {
     if (err) {
       console.log(err);
       return res.status(505).send("USER NOT FOUND");
     } else {
-      verifyPassword(pwd_hash_res, password).then((password_Matches) =>       {
+      verifyPassword(pwd_hash_res, password).then((password_Matches) => {
         if (password_Matches) {
           console.log("LOGIN EXITOSO DEL USUARIO: ", username_or_email);
           req.session.isLoggedIn = true;
@@ -30,13 +23,17 @@ app.post('/login', (req, res) => {
             req.session.full_name = everything[0].nombre_completo;
             req.session.user_type = everything[0].tipo_usuario;
             req.session.email = everything[0].email;
-            if (req.session.user_type === 'alumno') {
-              res.redirect('/dashboard');
-            } else if (req.session.user_type === 'ponente') {
-              res.redirect('/dashboard/ponente');
-            } else if (req.session.user_type === 'administrador') {
-              res.redirect('/admin');
-            }
+
+            // Send user data back to the client
+            res.json({
+              success: true,
+              user: {
+                username: req.session.username,
+                full_name: req.session.full_name,
+                user_type: req.session.user_type,
+                email: req.session.email
+              }
+            });
           });
         } else {
           console.log('INTENTO DE SESIÓN FALLIDO');

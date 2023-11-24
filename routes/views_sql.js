@@ -310,9 +310,6 @@ app.post('/asistencia_mods', (req, res) => {
   });
 });
 
-
-
-
 app.post('/informacion_de_moderadores', (req, res) => {
   const { Id_Mod } = req.body;
   console.log(Id_Mod);
@@ -325,10 +322,5 @@ app.post('/informacion_de_moderadores', (req, res) => {
     }
   });
 });
-
-
-
-
-
 
 module.exports = app;
