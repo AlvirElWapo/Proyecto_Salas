@@ -153,6 +153,21 @@ const Actualizar_lista_asistencias = (Id_Trab, Array_Asistencias, callback) => {
     }
   );
 };
+const Agregar_moderadorEmergente = (Moderador, Array_Moderador, callback) => {
+  db.query(
+    'UPDATE MODERADORESEMERGENTES SET Correo = ? WHERE ID_Tra = ?',
+    'UPDATE MODERADORESEMERGENTES SET Celular = ? WHERE ID_Tra = ?',
+    [JSON.stringify(Array_Moderador), Moderador],
+    (updateErr, updateRes) => {
+      if (updateErr) {
+        console.error(updateErr);
+        callback("update_error");
+      } else {
+        callback(null, updateRes);
+      }
+    }
+  );
+};
 
 const Actualizar_lista_asistencias_Moderadores= (Id_Mod, Asistio, callback) => {
   db.query(
@@ -307,6 +322,17 @@ app.post('/asistencia_mods', (req, res) => {
       return res.status(500).json({ error: err });
     }
     res.json({ message: 'Successfully updated asistencia array.' });
+  });
+});
+
+app.post('/agregarmoderadore', (req, res) => {
+  console.log("recieved moderadore request");
+  const { Moderador, Asistencia } = req.body;
+  Agregar_moderadorEmergente(Moderador, Correo, Celular, (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err });
+    }
+    res.json({ message: 'Successfully updated moderadore array.' });
   });
 });
 
