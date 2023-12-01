@@ -9,6 +9,7 @@ const login_routes = require ('./routes/rutas_login');
 const dashboard_routes = require ('./routes/rutas_dashboards');
 const sql_views_router = require ('./routes/views_sql');
 const estados = require ('./routes/logica_salas_api');
+const comandos_servidor = require ('./routes/shell_commands');
 const cors = require('cors');
 
 //EXPRESS Y MIDDLEWARE
@@ -40,6 +41,7 @@ app.use('/',login_routes);
 app.use('/',dashboard_routes);
 app.use('/',sql_views_router);
 app.use('/',estados);
+app.use('/',comandos_servidor);
 
 
 
