@@ -59,7 +59,7 @@ app.post('/register', (req, res) =>
     console.log( "HASH CREADO DE CONTRASEÑA: " + contr_encriptada)
     db.query(
       'INSERT INTO USUARIO (tipo_usuario, password_hash, email, nombre_completo, nombre_usuario) VALUES(?, ?, ?, ?,?) ;',
-      [ 'alumno' ,contr_encriptada, email, full_name, username],
+      [ 'moderador' ,contr_encriptada, email, full_name, username],
       (err, sql_res) =>
       {
         if (err) {console.error(err);return res.status(500).send('Internal Server Error at Registration');}
