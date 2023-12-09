@@ -3,7 +3,7 @@ from datetime import datetime
 import re
 import json
 
-ponencias_documento = './Programa_Delfín_bdd.xlsx'
+ponencias_documento = './Ponencia.xlsx'
 df = pd.read_excel(ponencias_documento)
 
  #   _____      _                                 
@@ -386,6 +386,6 @@ data_en_conjunto = {
 
 
 output_file = "output.sql"
-Creacion_Archivo_SQL(data_en_conjunto, 1743, output_file)
+Creacion_Archivo_SQL(data_en_conjunto, 1140, output_file)
 
 
