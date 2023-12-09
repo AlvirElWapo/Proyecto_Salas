@@ -3,7 +3,7 @@ import re
 import json
 import math
 
-excel_file = './Moderador.xlsx'
+excel_file = './db/carga_bdd/Moderador.xlsx'
 df = pd.read_excel(excel_file)
 
  #   _____      _                                 
@@ -108,17 +108,19 @@ def Creacion_Archivo_SQL(data_en_conjunto, n, output_file):
         "Moderador", "Sexo", "Correo", "Celular", "Sala", "Correo_Alternativo", "Sala2"
     ]
     sql_template = "INSERT INTO MODERADORES ({}) VALUES ({});"
-    with open(output_file, "w") as file:
+    with open(output_file, "w", encoding="utf-8") as file:
         for i in range(n):
             values = []
 
             for field in fields_to_print_in_order:
                 if field in data_en_conjunto:
-                    value = data_en_conjunto[field]
+                    value = data_en_conjunto[field][i]
                     if isinstance(value, list):
                         values.append(json.dumps(value[i], ensure_ascii=False))
+                    elif pd.isnull(value):
+                        values.append("NULL")
                     else:
-                        values.append(str(value))  
+                        values.append(f"'{value}'") 
             sql_statement = sql_template.format(", ".join(fields_to_print_in_order), ", ".join(values))
 
             file.write(sql_statement + "\n")
