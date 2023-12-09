@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS PONENCIAS(
 CREATE TABLE IF NOT EXISTS MODERADORES (
     Pais TEXT,
     Institucion TEXT,
+    Tipo TEXT,
     Area_Deseada TEXT,
     Area_Alternativa TEXT,
     ID_Mod VARCHAR(5),

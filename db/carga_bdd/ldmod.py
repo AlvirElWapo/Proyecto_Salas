@@ -89,6 +89,7 @@ def limpiar_numero(celular):
 
 # PAIS = []
 # INSTITUCION = []
+# TIPO = []
 # AREA_DESEADA = []
 # AREA_ALTERNATIVA = []
 # ID_MOD = []
@@ -99,9 +100,11 @@ def limpiar_numero(celular):
 # SALA = []
 # CORREO_ALTERNATIVO = []
 # SALA2 = []
+
+
 def Creacion_Archivo_SQL(data_en_conjunto, n, output_file):
     fields_to_print_in_order = [
-        "Pais", "Institucion", "Area_Deseada","Area_Alternativa", "ID_Mod",
+        "Pais", "Institucion","Tipo", "Area_Deseada","Area_Alternativa", "ID_Mod",
         "Moderador", "Sexo", "Correo", "Celular", "Sala", "Correo_Alternativo", "Sala2"
     ]
     sql_template = "INSERT INTO MODERADORES ({}) VALUES ({});"
@@ -125,6 +128,7 @@ def Creacion_Archivo_SQL(data_en_conjunto, n, output_file):
 
 # PAIS = []
 # INSTITUCION = []
+# TIPO = []
 # AREA_DESEADA = []
 # AREA_ALTERNATIVA = []
 # ID_MOD = []
@@ -144,6 +148,10 @@ for field in PAIS_data:
 #  institucion
 for field in INSTITUCION_data:
     INSTITUCION.append(field)
+
+#   tipo 
+for field in TIPO_data:
+    TIPO.append(field)
 
 #  area deseada y area alternativa 
 for field in AREA_DESEADA_data:
@@ -213,6 +221,7 @@ for field in SALA2_data:
 data_en_conjunto = {
         "Pais":PAIS ,
         "Institucion":INSTITUCION,
+        "Tipo":TIPO,
         "Area_Deseada":AREA_DESEADA,
         "Area_Alternativa":AREA_ALTERNATIVA ,
         "ID_Mod":ID_MOD,
@@ -226,5 +235,5 @@ data_en_conjunto = {
 }
 
 
-output_file = "output_mods.sql"
-Creacion_Archivo_SQL(data_en_conjunto, 78 , output_file)
+output_file = "prueba_sergio2.sql"
+Creacion_Archivo_SQL(data_en_conjunto, 77 , output_file)

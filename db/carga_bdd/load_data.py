@@ -385,7 +385,7 @@ data_en_conjunto = {
 }
 
 
-output_file = "output.sql"
+output_file = "prueba_para_sergio.sql"
 Creacion_Archivo_SQL(data_en_conjunto, 1140, output_file)
 
 
