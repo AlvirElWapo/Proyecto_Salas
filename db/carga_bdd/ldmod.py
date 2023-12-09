@@ -235,5 +235,5 @@ data_en_conjunto = {
 }
 
 
-output_file = "prueba_sergio2.sql"
+output_file = "Moderadores.sql"
 Creacion_Archivo_SQL(data_en_conjunto, 77 , output_file)

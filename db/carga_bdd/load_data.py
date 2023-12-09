@@ -36,31 +36,11 @@ FECHA_data = df["Fecha"]
 DIA_data = df["Dia"]
 TURNO_data = df["Turno"]
 BLOQUE_data = df["Bloque"]
-SALON_data = df["Salon"]
+IDENTIFICADOR_SALON_data = df["Identificador_Salon"]
 UBICACION_data = df["Ubicacion"]
 SEDE_data = df["Sede"]
+SALON_data = df["Salon"]
 
-#  /$$      /$$                 /$$                                    /$$                                        
-# | $$$    /$$$                | $$                                   | $$                                        
-# | $$$$  /$$$$  /$$$$$$   /$$$$$$$  /$$$$$$   /$$$$$$  /$$$$$$   /$$$$$$$  /$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
-# | $$ $$/$$ $$ /$$__  $$ /$$__  $$ /$$__  $$ /$$__  $$|____  $$ /$$__  $$ /$$__  $$ /$$__  $$ /$$__  $$ /$$_____/
-# | $$  $$$| $$| $$  \ $$| $$  | $$| $$$$$$$$| $$  \__/ /$$$$$$$| $$  | $$| $$  \ $$| $$  \__/| $$$$$$$$|  $$$$$$ 
-# | $$\  $ | $$| $$  | $$| $$  | $$| $$_____/| $$      /$$__  $$| $$  | $$| $$  | $$| $$      | $$_____/ \____  $$
-# | $$ \/  | $$|  $$$$$$/|  $$$$$$$|  $$$$$$$| $$     |  $$$$$$$|  $$$$$$$|  $$$$$$/| $$      |  $$$$$$$ /$$$$$$$/
-# |__/     |__/ \______/  \_______/ \_______/|__/      \_______/ \_______/ \______/ |__/       \_______/|_______/ 
-#                                                                                                                 
-
-# PAIS_data = df["País"]
-# INSTITUCION_data = df["Institución"]
-# MODALIDAD_data = df["Modalidad"]
-# AREA_data = df["Área"]
-# ID_MOD_data = df["ID_Mod"]
-# MODERADOR_data = df["Moderador"]
-# SEXO_data = df["Sexo"]
-# CORREO_data = df["Correo"]
-# CELULAR_data = df["Celular"]
-# SALA_data = df["Sala"]
-#
  #                               _           
  #     /\                       | |          
  #    /  \   _ __ _ __ ___  __ _| | ___  ___ 
@@ -95,32 +75,10 @@ FECHA = []
 DIA = []
 TURNO = []
 BLOQUE = [] 
-SALON = [] 
+IDENTIFICADOR_SALON = [] 
 UBICACION = [] 
 SEDE = [] 
-
-#  /$$      /$$                 /$$                                    /$$                                        
-# | $$$    /$$$                | $$                                   | $$                                        
-# | $$$$  /$$$$  /$$$$$$   /$$$$$$$  /$$$$$$   /$$$$$$  /$$$$$$   /$$$$$$$  /$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
-# | $$ $$/$$ $$ /$$__  $$ /$$__  $$ /$$__  $$ /$$__  $$|____  $$ /$$__  $$ /$$__  $$ /$$__  $$ /$$__  $$ /$$_____/
-# | $$  $$$| $$| $$  \ $$| $$  | $$| $$$$$$$$| $$  \__/ /$$$$$$$| $$  | $$| $$  \ $$| $$  \__/| $$$$$$$$|  $$$$$$ 
-# | $$\  $ | $$| $$  | $$| $$  | $$| $$_____/| $$      /$$__  $$| $$  | $$| $$  | $$| $$      | $$_____/ \____  $$
-# | $$ \/  | $$|  $$$$$$/|  $$$$$$$|  $$$$$$$| $$     |  $$$$$$$|  $$$$$$$|  $$$$$$/| $$      |  $$$$$$$ /$$$$$$$/
-# |__/     |__/ \______/  \_______/ \_______/|__/      \_______/ \_______/ \______/ |__/       \_______/|_______/ 
-#                                                                                                                 
-
-PAIS = []
-INSTITUCION = []
-MODALIDAD = []
-AREA = []
-ID_MOD = []
-MODERADOR = []
-SEXO = []
-CORREO = []
-CELULAR = []
-SALA = []
-#Correo Alternativo
-#Sala 2
+SALON = [] 
 
 
  #  ______                _                       
@@ -159,9 +117,10 @@ def Creacion_Archivo_SQL(data_en_conjunto, n, output_file):
         "Dia",
         "Turno",
         "Bloque",
-        "Salon",
+        "Identificador_Salon",
         "Ubicacion",
-        "Sede"]
+        "Sede",
+        "Salon"]
 
     sql_template = "INSERT INTO PONENCIAS ({}) VALUES ({});"
 
@@ -347,12 +306,14 @@ for field in TURNO_data:
     TURNO.append(field)
 for field in BLOQUE_data:
     BLOQUE.append(field)
-for field in SALON_data:
-    SALON.append(field)
+for field in IDENTIFICADOR_SALON_data:
+    IDENTIFICADOR_SALON.append(field)
 for field in UBICACION_data:
     UBICACION.append(field)
 for field in SEDE_data:
     SEDE.append(field)
+for field in SALON_data:
+    SALON.append(field)
 
  #                                    _             _                          _     _            
  #     /\                            | |           | |          /\            | |   (_)           
@@ -379,13 +340,14 @@ data_en_conjunto = {
         "Dia":DIA ,
         "Turno":TURNO ,
         "Bloque":BLOQUE ,
-        "Salon":SALON ,
+        "Identificador_Salon":IDENTIFICADOR_SALON,
         "Ubicacion":UBICACION ,
-        "Sede":SEDE
-}
+        "Sede":SEDE,
+        "Salon":SALON
+        }
 
 
-output_file = "prueba_para_sergio.sql"
+output_file = "Ponencias.sql"
 Creacion_Archivo_SQL(data_en_conjunto, 1140, output_file)
 
 

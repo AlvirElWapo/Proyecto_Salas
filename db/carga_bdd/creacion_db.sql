@@ -35,10 +35,11 @@ CREATE TABLE IF NOT EXISTS PONENCIAS(
     Dia VARCHAR(20),
     Turno VARCHAR(20),
     Bloque TEXT,
-    Salon TEXT,
+    Identificador_Salon TEXT,
     Ubicacion TEXT,
     Sede TEXT,
-    Asistencia JSON DEFAULT NULL
+    Asistencia JSON DEFAULT NULL,
+    Salon TEXT
 );
 
 CREATE TABLE IF NOT EXISTS MODERADORES (
