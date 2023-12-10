@@ -148,24 +148,29 @@ function get_pwd_hash(username_or_email, callback) {
 
 
 function validateModerador(username_or_email, password, callback) {
-  db.query('SELECT ID_Mod FROM MODERADORES WHERE Moderador = ? OR Correo = ?', 
-  [username_or_email, username_or_email], (err, sql_res) => {
-    if (err) {
-      console.error(err);
-      return callback("sql_error");
+  // Modify the SQL query to retrieve the required fields (full name and email)
+  db.query(
+    'SELECT ID_Mod, Moderador, Correo FROM MODERADORES WHERE Moderador = ? OR Correo = ?',
+    [username_or_email, username_or_email],
+    (err, sql_res) => {
+      if (err) {
+        console.error(err);
+        return callback("sql_error");
+      }
+      if (sql_res.length === 1 && sql_res[0].ID_Mod === password) {
+        // Create a modUser object with the retrieved fields
+        const modUser = {
+          nombre_usuario: sql_res[0].Moderador, // Use the Moderador field as username
+          nombre_completo: sql_res[0].Moderador, // Use the Moderador field as full name
+          tipo_usuario: 'moderador',
+          email: sql_res[0].Correo // Use the Correo field as email
+        };
+        return callback(null, modUser);
+      } else {
+        return callback("USER NOT FOUND OR PASSWORD INVALID");
+      }
     }
-    if (sql_res.length === 1 && sql_res[0].ID_Mod === password) {
-      const modUser = {
-        nombre_usuario: username_or_email,
-        nombre_completo: username_or_email,
-        tipo_usuario: 'moderador',
-        email: username_or_email
-      };
-      return callback(null, modUser);
-    } else {
-      return callback("USER NOT FOUND OR PASSWORD INVALID");
-    }
-  });
+  );
 }
 
 function get_everything(username_or_email, callback) {
