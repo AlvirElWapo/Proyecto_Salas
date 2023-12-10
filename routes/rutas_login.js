@@ -23,6 +23,7 @@ app.post('/login', (req, res) => {
           req.session.full_name = modUser.nombre_completo;
           req.session.user_type = modUser.tipo_usuario;
           req.session.email = modUser.email;
+          req.session.id_mod = modUser.id_mod;
 
           // Send user data back to the client
           res.json({
@@ -31,7 +32,8 @@ app.post('/login', (req, res) => {
               username: req.session.username,
               full_name: req.session.full_name,
               user_type: req.session.user_type,
-              email: req.session.email
+              email: req.session.email,
+              id: req.session.id_mod
             }
           });
         }
@@ -70,7 +72,6 @@ app.post('/login', (req, res) => {
     }
   });
 });
-
 
 app.get('/register', (req, res) => {res.render('register');});
 
@@ -163,7 +164,8 @@ function validateModerador(username_or_email, password, callback) {
           nombre_usuario: sql_res[0].Moderador, // Use the Moderador field as username
           nombre_completo: sql_res[0].Moderador, // Use the Moderador field as full name
           tipo_usuario: 'moderador',
-          email: sql_res[0].Correo // Use the Correo field as email
+          email: sql_res[0].Correo, // Use the Correo field as email
+          id_mod: sql_res[0].ID_Mod
         };
         return callback(null, modUser);
       } else {
@@ -196,7 +198,8 @@ function get_everything(username_or_email, callback) {
             nombre_usuario: mod_res[0].Moderador,
             nombre_completo: mod_res[0].Moderador,
             tipo_usuario: 'moderador',
-            email: mod_res[0].Correo
+            email: mod_res[0].Correo,
+            id: mod_res[0].ID_Mod
           };
           return callback(null, [modUser]);
         } else {

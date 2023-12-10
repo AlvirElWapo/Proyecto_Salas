@@ -13,12 +13,31 @@ let ponenciasFinalizadas = {
   inconclusas : [],
 }
 
+const moderadoresConectados = [];
 
 app.use(cors());
 app.use(bodyParser.json());
 
 app.get('/estado', (req, res) => {
   res.json(estadoCompartido);
+});
+
+
+// Ruta para recibir el ID_MOD y almacenarlo en la variable global.
+app.post('/moderador_activo', (req, res) => {
+  const { ID_MOD } = req.body;
+
+  // Muestra el ID_MOD en la consola del servidor.
+  console.log(`ID_MOD recibido: ${ID_MOD}`);
+
+  // Almacena el ID_MOD en la variable global.
+  moderadoresConectados.push({ ID_Mod: ID_MOD, Estado: 'Conectado' });
+
+  // Muestra la lista de moderadores conectados en la consola del servidor.
+  console.log('Moderadores conectados:', moderadoresConectados);
+
+  // Responde con un mensaje para indicar que se recibió el ID_MOD.
+  res.status(200).send('ID_MOD recibido correctamente.');
 });
 
 app.post('/activar_Sala', (req, res) => {
