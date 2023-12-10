@@ -22,6 +22,10 @@ app.get('/estado', (req, res) => {
   res.json(estadoCompartido);
 });
 
+app.get('/id_moderadores_conectados', (req, res) => {
+  res.json(moderadoresConectados);
+});
+
 
 // Ruta para recibir el ID_MOD y almacenarlo en la variable global.
 app.post('/moderador_activo', (req, res) => {
@@ -30,15 +34,23 @@ app.post('/moderador_activo', (req, res) => {
   // Muestra el ID_MOD en la consola del servidor.
   console.log(`ID_MOD recibido: ${ID_MOD}`);
 
-  // Almacena el ID_MOD en la variable global.
-  moderadoresConectados.push({ ID_Mod: ID_MOD, Estado: 'Conectado' });
+  // Verifica si el ID_MOD ya está en la lista.
+  const existeModerador = moderadoresConectados.some((moderador) => moderador.ID_Mod === ID_MOD);
 
-  // Muestra la lista de moderadores conectados en la consola del servidor.
-  console.log('Moderadores conectados:', moderadoresConectados);
-
-  // Responde con un mensaje para indicar que se recibió el ID_MOD.
-  res.status(200).send('ID_MOD recibido correctamente.');
+  if (!existeModerador) {
+    // Almacena el ID_MOD en la variable global si no existe.
+    moderadoresConectados.push({ ID_Mod: ID_MOD, Estado: 'Conectado' });
+    // Muestra la lista de moderadores conectados en la consola del servidor.
+    console.log('Moderadores conectados:', moderadoresConectados);
+    // Responde con un mensaje para indicar que se recibió el ID_MOD.
+    res.status(200).send('ID_MOD recibido correctamente.');
+  } else {
+    console.log('El moderador ya está conectado:', ID_MOD);
+    // Responde con un mensaje para indicar que el moderador ya está conectado.
+    res.status(200).send('El moderador ya está conectado.');
+  }
 });
+
 
 app.post('/activar_Sala', (req, res) => {
   const { ID_tra } = req.body;
