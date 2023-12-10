@@ -8,10 +8,6 @@ let estadoCompartido = {
   state: [],
 };
 
-
-
-
-
 let ponenciasFinalizadas = {
   completadas : [],
   inconclusas : [],

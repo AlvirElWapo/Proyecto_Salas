@@ -4,6 +4,8 @@ const db = require('../db/database_connection');
 const app = express()
 
 
+// FUNCIONES SQL
+
 const getRingGraph = (callback) => {
   db.query(
     'SELECT * FROM Ring_Graph',
@@ -19,6 +21,7 @@ const getRingGraph = (callback) => {
     }
   );
 };
+
 
 const GET_ID_TRA= (callback) => {
   db.query(
@@ -87,6 +90,27 @@ const getModeradoresByID= (Id_Mod, callback) => {
   );
 };
 
+
+const getModeradoresByEdificio= (edif, callback) => {
+  console.log(edif);
+  db.query(
+    'SELECT * FROM MODERADORES m, PONENCIAS p  WHERE m.Sala = p.Identificador_Salon AND p.UBICACION = ? GROUP BY m.MODERADOR;',
+    [edif],
+    (err, sqlRes) => {
+      if (err) {
+        console.error(err);
+        callback("sql_error");
+      } else if (sqlRes.length > 0) {
+        callback(null, sqlRes);
+      } else {
+        callback("No data available for the specified ID_MODERADOR");
+      }
+    }
+  );
+};
+
+
+
 const getListaSedes = (callback) => {
   db.query(
     'SELECT Salon FROM PONENCIAS GROUP BY Salon;',
@@ -138,7 +162,6 @@ const getEquiposBySalon = (Id_Trab, callback) => {
   );
 };
 
-
 const Actualizar_lista_asistencias = (Id_Trab, Array_Asistencias, callback) => {
   db.query(
     'UPDATE PONENCIAS SET Asistencia = ? WHERE ID_Tra = ?',
@@ -153,6 +176,7 @@ const Actualizar_lista_asistencias = (Id_Trab, Array_Asistencias, callback) => {
     }
   );
 };
+
 const Agregar_moderadorEmergente = (Moderador, Array_Moderador, callback) => {
   db.query(
     'UPDATE MODERADORESEMERGENTES SET Correo = ? WHERE ID_Tra = ?',
@@ -199,6 +223,67 @@ const GET_ID_MOD= (callback) => {
     }
   );
 };
+
+const get_edificios= (callback) => 
+{
+  db.query(
+    'SELECT UBICACION FROM PONENCIAS GROUP BY UBICACION' ,
+    (err, sqlRes) => {
+      if (err) {
+        console.error(err);
+        callback("sql_error");
+      } else if (sqlRes.length > 0) {
+        callback(null, sqlRes);
+      } else {
+        callback("No data available in ID_Tra view");
+      }
+    }
+  );
+};
+
+
+
+
+const get_mod_by_Edificio = (callback) => 
+{
+  db.query(
+    'SELECT ID_Mod FROM MODERADORES',
+    (err, sqlRes) => {
+      if (err) {
+        console.error(err);
+        callback("sql_error");
+      } else if (sqlRes.length > 0) {
+        callback(null, sqlRes);
+      } else {
+        callback("No data available in ID_Tra view");
+      }
+    }
+  );
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// RUTAS EXPRESS
+
+
+
+
+
 
 app.get('/areas', (req, res) => {
   getRingGraph((error, result) => {
@@ -349,5 +434,54 @@ app.post('/informacion_de_moderadores', (req, res) => {
     }
   });
 });
+
+
+// const get_edificios= (callback) => 
+// {
+//   db.query(
+//     'SELECT UBICACION FROM PONENCIAS',
+//     (err, sqlRes) => {
+//       if (err) {
+//         console.error(err);
+//         callback("sql_error");
+//       } else if (sqlRes.length > 0) {
+//         callback(null, sqlRes);
+//       } else {
+//         callback("No data available in ID_Tra view");
+//       }
+//     }
+//   );
+// };
+
+app.get('/edificios', (req,res) => 
+{
+    get_edificios((error, result) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+      } else {
+        res.json(result);
+      }
+    });
+  });
+
+
+app.post('/informacion_por_edificio', (req, res) => {
+  const { UBICACION } = req.body;
+  console.log(UBICACION);
+  getModeradoresByEdificio(UBICACION, (error, result) => 
+  {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    } else {
+      res.json(result);
+
+    }
+  });
+});
+
+
+
 
 module.exports = app;

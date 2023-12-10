@@ -1,0 +1,68 @@
+-- PONENCIAS POR MODERADOR
+SELECT m.MODERADOR, p.ID_Tra, p.TITULO 
+FROM MODERADORES m, PONENCIAS p 
+WHERE m.Sala = p.Identificador_Salon 
+  AND m.MODERADOR= 'Alcaraz Aviles Jesus';
+
+-- EDIFICIO POR MODERADOR
+SELECT p.UBICACION, p.Salon
+FROM MODERADORES m, PONENCIAS p 
+WHERE m.Sala = p.Identificador_Salon 
+  AND m.MODERADOR= 'Alcaraz Aviles Jesus' 
+GROUP BY p.UBICACION;
+
+-- MODERADORES POR EDIFICIO 
+SELECT m.MODERADOR 
+FROM MODERADORES m, PONENCIAS p  
+WHERE m.Sala = p.Identificador_Salon    
+  AND p.UBICACION = 'Edificio Docencia II' 
+GROUP BY m.MODERADOR;
+
+-- MODERADOR POR ID_Tra de PONENCIA 
+SELECT m.MODERADOR 
+FROM MODERADORES m, PONENCIAS p  
+WHERE m.Sala = p.Identificador_Salon    
+  AND p.ID_Tra=1325
+GROUP BY m.MODERADOR;
+
+
+-- MODERADORES POR AREA
+SELECT m.MODERADOR, m.AREA_DESEADA, m.AREA_ALTERNATIVA
+FROM MODERADORES m, PONENCIAS p  
+WHERE m.Sala = p.Identificador_Salon    
+    AND p.Area = "Area I"
+GROUP BY m.MODERADOR;
+
+ -- NUMERO DE MODERADORES POR AREA
+SELECT p.Area, COUNT(m.MODERADOR) 
+FROM MODERADORES m, PONENCIAS p  
+WHERE m.Sala = p.Identificador_Salon    
+GROUP BY p.Area;
+
+-- Mas importantisimo creo 
+SELECT m.MODERADOR, m.Sala, m.AREA_DESEADA
+FROM MODERADORES m, PONENCIAS p  
+WHERE m.Sala = p.Identificador_Salon    
+AND m.MODERADOR = 'Alcaraz Aviles Jesus'
+GROUP BY p.ID_Tra;
+
+-- PONENCIAS POR SALON
+SELECT m.MODERADOR, p.ID_Tra, p.TITULO 
+FROM MODERADORES m, PONENCIAS p 
+WHERE m.Sala = p.Identificador_Salon 
+  AND p.Salon = 'D1';
+
+-- PONENCIAS POR SALON POR DIA
+SELECT m.MODERADOR, p.ID_Tra, p.TITULO 
+FROM MODERADORES m, PONENCIAS p 
+WHERE m.Sala = p.Identificador_Salon 
+  AND p.Salon LIKE 'DII-101'
+  AND p.Identificador_Salon LIKE 'J%' ;
+
+-- PONENCIAS POR SALON POR DIA
+SELECT m.MODERADOR, p.ID_Tra, p.TITULO 
+FROM MODERADORES m, PONENCIAS p 
+WHERE m.Sala = p.Identificador_Salon 
+  AND p.Salon LIKE 'DII-101'
+  AND p.Identificador_Salon LIKE 'J%' ;
+
