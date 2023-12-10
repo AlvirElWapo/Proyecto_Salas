@@ -3,7 +3,7 @@ from datetime import datetime
 import re
 import json
 
-ponencias_documento = './Ponencia.xlsx'
+ponencias_documento = './db/carga_bdd/Ponencia.xlsx'
 df = pd.read_excel(ponencias_documento)
 
  #   _____      _                                 
@@ -124,21 +124,35 @@ def Creacion_Archivo_SQL(data_en_conjunto, n, output_file):
 
     sql_template = "INSERT INTO PONENCIAS ({}) VALUES ({});"
 
-    with open(output_file, "w") as file:
+
+    def format_value(value):
+        if isinstance(value, (list, dict)):
+            # Para valores de tipo lista o diccionario, como JSON, agregamos comillas simples
+            #formatted_value = json.dumps(value, ensure_ascii=False)
+            formatted_value = f"'{json.dumps(value, ensure_ascii=False)}'"
+
+            return formatted_value
+        elif isinstance(value, str):
+            # Para valores de cadena, agregamos comillas simples
+            return f'"{value}"'
+        else:
+            # Dejamos otros valores sin comillas
+            return str(value)
+
+    with open(output_file, "w", encoding="utf-8") as file:
         for i in range(n):
             values = []
 
             for field in fields_to_print_in_order:
                 if field in data_en_conjunto:
                     value = data_en_conjunto[field]
-                    if isinstance(value, list):
-                        values.append(json.dumps(value[i], ensure_ascii=False))
-                    else:
-                        values.append(str(value))  
+                    formatted_value = format_value(value[i])
+                    values.append(formatted_value)
 
             sql_statement = sql_template.format(", ".join(fields_to_print_in_order), ", ".join(values))
 
             file.write(sql_statement + "\n")
+
 
 
  #  _____ _____ _______        
@@ -348,6 +362,6 @@ data_en_conjunto = {
 
 
 output_file = "Ponencias.sql"
-Creacion_Archivo_SQL(data_en_conjunto, 1140, output_file)
+Creacion_Archivo_SQL(data_en_conjunto, 1155, output_file)
 
 
