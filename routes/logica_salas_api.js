@@ -31,6 +31,26 @@ app.get('/id_moderadores_conectados', (req, res) => {
 app.post('/moderador_activo', (req, res) => {
   const { ID_MOD } = req.body;
   console.log(`ID_MOD recibido: ${ID_MOD}`);
+  // Check if ID_MOD already exists in the array
+  const isAlreadyConnected = moderadoresConectados.some((mod) => mod.ID_Mod === ID_MOD);
+  if (!isAlreadyConnected) {
+    // If it doesn't exist, push it to the array
+    moderadoresConectados.push({ ID_Mod: ID_MOD });
+    console.log('Moderadores conectados:', moderadoresConectados);
+  }else
+  {
+    console.log(`USUARIO ${ID_MOD} Re-Inició Sesión, nada por hacer...`)
+  }
+  res.status(200).send('ID_MOD recibido correctamente.');
+});
+
+
+app.get('/obtener_moderadores_activos', (req, res) => {
+  console.log("-------------------------------------------------------------------------")
+  console.log("MODERADORES ACTIVOS: " + `${moderadoresConectados}`);
+  console.log("-------------------------------------------------------------------------")
+  res.json(moderadoresConectados);
+
 
   // Verifica si el ID_MOD ya está en la lista.
   const existeModerador = moderadoresConectados.some((moderador) => moderador.ID_Mod === ID_MOD);
@@ -48,7 +68,6 @@ app.post('/moderador_activo', (req, res) => {
     res.status(200).send('El moderador ya está conectado.');
   }
 });
-
 
 app.post('/activar_Sala', (req, res) => {
   const { ID_tra } = req.body;
