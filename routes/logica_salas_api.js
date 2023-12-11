@@ -26,18 +26,26 @@ app.get('/estado', (req, res) => {
 // Ruta para recibir el ID_MOD y almacenarlo en la variable global.
 app.post('/moderador_activo', (req, res) => {
   const { ID_MOD } = req.body;
-
-  // Muestra el ID_MOD en la consola del servidor.
   console.log(`ID_MOD recibido: ${ID_MOD}`);
-
-  // Almacena el ID_MOD en la variable global.
-  moderadoresConectados.push({ ID_Mod: ID_MOD, Estado: 'Conectado' });
-
-  // Muestra la lista de moderadores conectados en la consola del servidor.
-  console.log('Moderadores conectados:', moderadoresConectados);
-
-  // Responde con un mensaje para indicar que se recibió el ID_MOD.
+  // Check if ID_MOD already exists in the array
+  const isAlreadyConnected = moderadoresConectados.some((mod) => mod.ID_Mod === ID_MOD);
+  if (!isAlreadyConnected) {
+    // If it doesn't exist, push it to the array
+    moderadoresConectados.push({ ID_Mod: ID_MOD });
+    console.log('Moderadores conectados:', moderadoresConectados);
+  }else
+  {
+    console.log(`USUARIO ${ID_MOD} Re-Inició Sesión, nada por hacer...`)
+  }
   res.status(200).send('ID_MOD recibido correctamente.');
+});
+
+
+app.get('/obtener_moderadores_activos', (req, res) => {
+  console.log("-------------------------------------------------------------------------")
+  console.log("MODERADORES ACTIVOS: " + `${moderadoresConectados}`);
+  console.log("-------------------------------------------------------------------------")
+  res.json(moderadoresConectados);
 });
 
 app.post('/activar_Sala', (req, res) => {

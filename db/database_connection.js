@@ -1,10 +1,10 @@
 const mysql = require('mysql2');
 
 const pool = mysql.createPool({
-  host: 'localhost',
+  host: '172.17.0.2',
   user: 'root',
-  database: 'SALAS_DB2',
-  port: 3307,
+  password: '6327',
+  database: 'SALAS_DB',
 });
 
 module.exports = pool;

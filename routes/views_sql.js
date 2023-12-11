@@ -110,6 +110,25 @@ const getModeradoresByEdificio= (edif, callback) => {
 };
 
 
+const getModeradoresByEdificioEID = (edif, ID_Mod, callback) => {
+  db.query(
+    'SELECT m.* FROM MODERADORES m, PONENCIAS p WHERE m.Sala = p.Identificador_Salon AND p.UBICACION = ? AND m.ID_Mod = ? GROUP BY m.MODERADOR;',
+    [edif, ID_Mod],
+    (err, sqlRes) => {
+      if (err) {
+        console.error(err);
+        callback("sql_error", null);
+      } else if (sqlRes.length > 0) {
+        console.log(`DATOS ENCONTRADOS PARA EDIFICIO:${edif} ID_Mod: ${ID_Mod}`);
+        callback(null, sqlRes);
+      } else {
+        console.log(`No data available for the specified EDIFICIO:${edif} ID_Mod: ${ID_Mod}`);
+        callback("No data available", null);
+      }
+    }
+  );
+};
+
 
 const getListaSedes = (callback) => {
   db.query(
@@ -242,8 +261,6 @@ const get_edificios= (callback) =>
 };
 
 
-
-
 const get_mod_by_Edificio = (callback) => 
 {
   db.query(
@@ -260,30 +277,6 @@ const get_mod_by_Edificio = (callback) =>
     }
   );
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// RUTAS EXPRESS
-
-
-
-
-
 
 app.get('/areas', (req, res) => {
   getRingGraph((error, result) => {
@@ -435,24 +428,6 @@ app.post('/informacion_de_moderadores', (req, res) => {
   });
 });
 
-
-// const get_edificios= (callback) => 
-// {
-//   db.query(
-//     'SELECT UBICACION FROM PONENCIAS',
-//     (err, sqlRes) => {
-//       if (err) {
-//         console.error(err);
-//         callback("sql_error");
-//       } else if (sqlRes.length > 0) {
-//         callback(null, sqlRes);
-//       } else {
-//         callback("No data available in ID_Tra view");
-//       }
-//     }
-//   );
-// };
-
 app.get('/edificios', (req,res) => 
 {
     get_edificios((error, result) => {
@@ -481,6 +456,17 @@ app.post('/informacion_por_edificio', (req, res) => {
   });
 });
 
+app.post('/informacion_por_edificio_eidemod', (req, res) => {
+  const { UBICACION, ID_Mod } = req.body;
+  getModeradoresByEdificioEID(UBICACION, ID_Mod, (error, result) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    } else {
+      res.json(result);
+    }
+  });
+});
 
 
 

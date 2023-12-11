@@ -66,3 +66,9 @@ WHERE m.Sala = p.Identificador_Salon
   AND p.Salon LIKE 'DII-101'
   AND p.Identificador_Salon LIKE 'J%' ;
 
+
+SELECT * FROM MODERADORES m, PONENCIAS p  WHERE m.Sala = p.Identificador_Salon AND p.UBICACION = 'Edificio de Docencia' AND p.ID_Tra = '00026' GROUP BY m.MODERADOR
+
+
+
+
