@@ -1,7 +1,161 @@
 const express = require('express');
 const db = require('../db/database_connection');
+const { exec } = require('child_process');
+const fileUpload = require('express-fileupload');
+const fs = require('fs');
+const path = require('path');
+
 
 const app = express()
+
+
+app.use(fileUpload());
+
+app.use(express.json());  // Reemplaza bodyParser con express.json()
+app.use(express.urlencoded({ extended: true }));
+
+app.post('/ejecutar_ldmod', (req, res) => {
+  const scriptPath = __dirname + '/../db/carga_bdd/ldmod.py';
+  console.log(`Ejecutando script ldmod.py: ${scriptPath}`);
+
+  exec(`python ${scriptPath}`, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error al ejecutar el script ldmod.py: ${error.message}`);
+      res.status(500).json({ error: 'Error al ejecutar el script ldmod.py' });
+      return;
+    }
+    if (stderr) {
+      console.error(`Error al ejecutar el script ldmod.py: ${stderr}`);
+      res.status(500).json({ error: 'Error al ejecutar el script ldmod.py' });
+      return;
+    }
+    console.log(`Script ldmod.py ejecutado con éxito: ${stdout}`);
+    res.json({ mensaje: 'Script ldmod.py ejecutado con éxito' });
+  });
+});
+
+// Nueva ruta para subir archivo Moderadores
+app.post('/subir_archivo_moderadores', (req, res) => {
+  const file = req.files && req.files.archivo;
+  if (file) {
+    const directorioArchivos = path.join(__dirname, '../archivos_recibidos');
+    
+    // Crea el directorio si no existe
+    if (!fs.existsSync(directorioArchivos)){
+      fs.mkdirSync(directorioArchivos);
+    }
+
+    const filePath = path.join(directorioArchivos, 'moderadores.xlsx');
+    file.mv(filePath, (error) => {
+      if (error) {
+        console.error(`Error al guardar el archivo Moderadores: ${error.message}`);
+        res.status(500).json({ error: 'Error al guardar el archivo Moderadores' });
+      } else {
+        // Ejecuta el script ldmod.py con la ruta del archivo recién subido
+        const scriptPath = path.join(__dirname, '../db/carga_bdd/ldmod.py');
+        console.log(`Ejecutando script ldmod.py: ${scriptPath} ${filePath}`);
+
+        exec(`python ${scriptPath} ${filePath}`, (scriptError, stdout, stderr) => {
+          if (scriptError) {
+            console.error(`Error al ejecutar el script ldmod.py: ${scriptError.message}`);
+            res.status(500).json({ error: 'Error al ejecutar el script ldmod.py' });
+            return;
+          }
+          if (stderr) {
+            console.error(`Error al ejecutar el script ldmod.py: ${stderr}`);
+            res.status(500).json({ error: 'Error al ejecutar el script ldmod.py' });
+            return;
+          }
+          console.log(`Script ldmod.py ejecutado con éxito: ${stdout}`);
+
+          // Ejecuta el script subir_sql_a_bd.py con la ruta del archivo SQL generado
+          const subirSqlScriptPath = path.join(__dirname, '../db/carga_bdd/subir_sql_a_bd.py');
+          const sqlFilePath = path.join(__dirname, '../Moderadores.sql');
+          console.log(`Ejecutando script subir_sql_a_bd.py: ${subirSqlScriptPath} ${sqlFilePath}`);
+
+          exec(`python ${subirSqlScriptPath} ${sqlFilePath}`, (sqlScriptError, sqlStdout, sqlStderr) => {
+            if (sqlScriptError) {
+              console.error(`Error al ejecutar el script subir_sql_a_bd.py: ${sqlScriptError.message}`);
+              res.status(500).json({ error: 'Error al ejecutar el script subir_sql_a_bd.py' });
+              return;
+            }
+            if (sqlStderr) {
+              console.error(`Error al ejecutar el script subir_sql_a_bd.py: ${sqlStderr}`);
+              res.status(500).json({ error: 'Error al ejecutar el script subir_sql_a_bd.py' });
+              return;
+            }
+            console.log(`Script subir_sql_a_bd.py ejecutado con éxito: ${sqlStdout}`);
+            res.json({ mensaje: 'Información cargada en la Base de Datos con éxito' });
+          });
+        });
+      }
+    });
+  } else {
+    res.status(400).json({ error: 'No se recibió ningún archivo Moderadores' });
+  }
+});
+
+// Nueva ruta para subir archivo Moderadores
+app.post('/subir_archivo_ponencias', (req, res) => {
+  const file = req.files && req.files.archivo;
+  if (file) {
+    const directorioArchivos = path.join(__dirname, '../archivos_recibidos');
+    
+    // Crea el directorio si no existe
+    if (!fs.existsSync(directorioArchivos)){
+      fs.mkdirSync(directorioArchivos);
+    }
+
+    const filePath = path.join(directorioArchivos, 'ponencias.xlsx');
+    file.mv(filePath, (error) => {
+      if (error) {
+        console.error(`Error al guardar el archivo ´Ponencias: ${error.message}`);
+        res.status(500).json({ error: 'Error al guardar el archivo Ponencias' });
+      } else {
+        // Ejecuta el script ldmod.py con la ruta del archivo recién subido
+        const scriptPath = path.join(__dirname, '../db/carga_bdd/load_data.py');
+        console.log(`Ejecutando script load_data.py: ${scriptPath} ${filePath}`);
+
+        exec(`python ${scriptPath} ${filePath}`, (scriptError, stdout, stderr) => {
+          if (scriptError) {
+            console.error(`Error al ejecutar el script load_data.py: ${scriptError.message}`);
+            res.status(500).json({ error: 'Error al ejecutar el script load_data.py' });
+            return;
+          }
+          if (stderr) {
+            console.error(`Error al ejecutar el script load_data.py: ${stderr}`);
+            res.status(500).json({ error: 'Error al ejecutar el script load_data.py' });
+            return;
+          }
+          console.log(`Script load_data.py ejecutado con éxito: ${stdout}`);
+
+          // Ejecuta el script subir_sql_a_bd.py con la ruta del archivo SQL generado
+          const subirSqlScriptPath = path.join(__dirname, '../db/carga_bdd/subir_sql_a_bd.py');
+          const sqlFilePath = path.join(__dirname, '../Ponencias.sql');
+          console.log(`Ejecutando script subir_sql_a_bd.py: ${subirSqlScriptPath} ${sqlFilePath}`);
+
+          exec(`python ${subirSqlScriptPath} ${sqlFilePath}`, (sqlScriptError, sqlStdout, sqlStderr) => {
+            if (sqlScriptError) {
+              console.error(`Error al ejecutar el script subir_sql_a_bd.py: ${sqlScriptError.message}`);
+              res.status(500).json({ error: 'Error al ejecutar el script subir_sql_a_bd.py' });
+              return;
+            }
+            if (sqlStderr) {
+              console.error(`Error al ejecutar el script subir_sql_a_bd.py: ${sqlStderr}`);
+              res.status(500).json({ error: 'Error al ejecutar el script subir_sql_a_bd.py' });
+              return;
+            }
+            console.log(`Script subir_sql_a_bd.py ejecutado con éxito: ${sqlStdout}`);
+            res.json({ mensaje: 'Información cargada en la Base de Datos con éxito' });
+          });
+        });
+      }
+    });
+  } else {
+    res.status(400).json({ error: 'No se recibió ningún archivo Ponencias' });
+  }
+});
+
 
 
 // FUNCIONES SQL
@@ -277,6 +431,68 @@ const get_mod_by_Edificio = (callback) =>
     }
   );
 };
+
+
+const GET_TOTAL_PON = (callback) => {
+  db.query(
+    'SELECT COUNT(*) AS total FROM PONENCIAS',  // Utiliza AS total para darle un nombre al resultado
+    (err, sqlRes) => {
+      if (err) {
+        console.error(err);
+        callback("sql_error");
+      } else if (sqlRes.length > 0) {
+        callback(null, sqlRes[0].total);  // Accede al total correctamente
+      } else {
+        callback("No data available in Ponencias ");
+      }
+    }
+  );
+};
+
+const GET_TOTAL_MOD= (callback) => {
+  db.query(
+    'SELECT COUNT(*) AS total FROM MODERADORES',
+    (err, sqlRes) => {
+      if (err) {
+        console.error(err);
+        callback("sql_error");
+      } else if (sqlRes.length > 0) {
+        callback(null, sqlRes[0].total); 
+      } else {
+        callback("No data available in Moderadores ");
+      }
+    }
+  );
+};
+
+
+
+
+
+
+
+app.get('/total_ponencias', (req, res) => {
+  GET_TOTAL_PON((error, result) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+app.get('/total_moderadores', (req, res) => {
+  GET_TOTAL_MOD((error, result) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    } else {
+      res.json(result);
+    }
+  });
+});
+
 
 app.get('/areas', (req, res) => {
   getRingGraph((error, result) => {

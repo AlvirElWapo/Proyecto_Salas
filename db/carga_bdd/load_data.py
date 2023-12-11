@@ -1,10 +1,21 @@
+import sys
 import pandas as pd
 from datetime import datetime
 import re
 import json
 
-ponencias_documento = './db/carga_bdd/Ponencia.xlsx'
-df = pd.read_excel(ponencias_documento)
+# Verifica si se proporcionó la ruta del archivo como argumento
+if len(sys.argv) < 2:
+    print("Por favor, proporciona la ruta del archivo como argumento.")
+    sys.exit(1)
+
+# Obtiene la ruta del archivo del primer argumento
+excel_file = sys.argv[1]
+
+df = pd.read_excel(excel_file)
+
+#ponencias_documento = './db/carga_bdd/Ponencia.xlsx'
+#df = pd.read_excel(ponencias_documento)
 
  #   _____      _                                 
  #  / ____|    | |                                

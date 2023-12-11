@@ -1,10 +1,21 @@
+import sys
 import pandas as pd
 import re
 import json
 import math
 
-excel_file = './db/carga_bdd/Moderador.xlsx'
+# Verifica si se proporcionó la ruta del archivo como argumento
+if len(sys.argv) < 2:
+    print("Por favor, proporciona la ruta del archivo como argumento.")
+    sys.exit(1)
+
+# Obtiene la ruta del archivo del primer argumento
+excel_file = sys.argv[1]
+
 df = pd.read_excel(excel_file)
+
+#excel_file = './db/carga_bdd/Moderador.xlsx'
+#df = pd.read_excel(excel_file)
 
  #   _____      _                                 
  #  / ____|    | |                                
@@ -238,4 +249,4 @@ data_en_conjunto = {
 
 
 output_file = "Moderadores.sql"
-Creacion_Archivo_SQL(data_en_conjunto, 77 , output_file)
+Creacion_Archivo_SQL(data_en_conjunto, 112 , output_file)

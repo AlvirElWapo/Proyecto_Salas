@@ -31,7 +31,6 @@ app.get('/id_moderadores_conectados', (req, res) => {
 app.post('/moderador_activo', (req, res) => {
   const { ID_MOD } = req.body;
   console.log(`ID_MOD recibido: ${ID_MOD}`);
-<<<<<<< HEAD
   // Check if ID_MOD already exists in the array
   const isAlreadyConnected = moderadoresConectados.some((mod) => mod.ID_Mod === ID_MOD);
   if (!isAlreadyConnected) {
@@ -51,9 +50,7 @@ app.get('/obtener_moderadores_activos', (req, res) => {
   console.log("MODERADORES ACTIVOS: " + `${moderadoresConectados}`);
   console.log("-------------------------------------------------------------------------")
   res.json(moderadoresConectados);
-});
 
-=======
 
   // Verifica si el ID_MOD ya está en la lista.
   const existeModerador = moderadoresConectados.some((moderador) => moderador.ID_Mod === ID_MOD);
@@ -72,8 +69,6 @@ app.get('/obtener_moderadores_activos', (req, res) => {
   }
 });
 
-
->>>>>>> 1f0cd08b6e9717d20056224a078319e6e43ac7e4
 app.post('/activar_Sala', (req, res) => {
   const { ID_tra } = req.body;
   console.log("Activando PONENCIA", ID_tra);
