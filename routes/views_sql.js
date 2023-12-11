@@ -672,6 +672,7 @@ app.post('/informacion_por_edificio', (req, res) => {
   });
 });
 
+
 app.post('/informacion_por_edificio_eidemod', (req, res) => {
   const { UBICACION, ID_Mod } = req.body;
   getModeradoresByEdificioEID(UBICACION, ID_Mod, (error, result) => {
@@ -684,6 +685,90 @@ app.post('/informacion_por_edificio_eidemod', (req, res) => {
   });
 });
 
+
+
+const CREAR_EMERGENTE = (actualModerador, possibleModerador, callback) => {
+  db.query(
+    'SELECT SALA FROM MODERADORES WHERE MODERADOR = ?;',
+    [actualModerador],
+    (selectErr, selectRes) => {
+      if (selectErr) {
+        console.error(selectErr);
+        callback("select_error");
+      } else {
+        const salaValue = selectRes[0].SALA;
+        db.query(
+          'UPDATE MODERADORES SET SALA = ? WHERE MODERADOR = ?;',
+          [salaValue, possibleModerador.MODERADOR],
+          (updateErr, updateRes) => {
+            if (updateErr) {
+              console.error(updateErr);
+              callback("update_error");
+            } else {
+              db.query(
+                'UPDATE MODERADORES SET SALA = NULL WHERE MODERADOR = ?;',
+                [actualModerador],
+                (nullUpdateErr, nullUpdateRes) => {
+                  if (nullUpdateErr) {
+                    console.error(nullUpdateErr);
+                    callback("null_update_error");
+                  } else {
+                    callback(null, updateRes, nullUpdateRes);
+                  }
+                }
+              );
+            }
+          }
+        );
+      }
+    }
+  );
+};
+
+
+
+const get_posibles_emergentes= (callback) => 
+{
+  db.query(
+    'SELECT MODERADOR, ID_Mod FROM MODERADORES WHERE SALA IS NULL' ,
+    (err, sqlRes) => {
+      if (err) {
+        console.error(err);
+        callback("sql_error");
+      } else if (sqlRes.length > 0) {
+        callback(null, sqlRes);
+      } else {
+        callback("No data available in ID_Tra view");
+      }
+    }
+  );
+};
+
+app.get('/posibles_emergentes', (req,res) => 
+{
+    get_posibles_emergentes((error, result) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+      } else {
+        res.json(result);
+      }
+    });
+  });
+
+
+app.post('/crear_emergente', (req, res) => {
+  const { actualModerador, posibleModerador } = req.body;
+  CREAR_EMERGENTE(actualModerador, posibleModerador, (error, result) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error al realizar el cambio');
+    } else {
+      res.send('Cambio realizado con éxito');
+    }
+  });
+  console.log(`CAMBIANDO ${actualModerador}, FOR ${posibleModerador.MODERADOR}`);
+});
 
 
 module.exports = app;
