@@ -3,7 +3,7 @@ import re
 import json
 import math
 
-excel_file = './Moderadores.xlsx'
+excel_file = './db/carga_bdd/Moderador.xlsx'
 df = pd.read_excel(excel_file)
 
  #   _____      _                                 
@@ -15,8 +15,9 @@ df = pd.read_excel(excel_file)
 
 PAIS_data = df["País"]
 INSTITUCION_data= df["Institución"]
-MODALIDAD_data = df["Modalidad"]
-AREA_data = df["Área"]
+TIPO_data = df["Tipo"]
+AREA_DESEADA_data = df["Area_Deseada"]
+AREA_ALTERNATIVA_data = df["Area_Alternativa"]
 ID_MOD_data = df["ID_Mod"]
 MODERADOR_data = df["Moderador"]
 SEXO_data = df["Sexo"]
@@ -36,11 +37,26 @@ SALA2_data = df["sala 2"]
  # /_/    \_\_|  |_|  \___|\__, |_|\___/|___/
  #                          __/ |            
  #                         |___/             
+# PAIS_data = df["País"]
+# INSTITUCION_data= df["Institución"]
+# TIPO_data = df["Tipo"]
+# AREA_DESEADA_data = df["Area_Deseada"]
+# AREA_ALTERNATIVA_data = df["Area_Alternativa"]
+# ID_MOD_data = df["ID_Mod"]
+# MODERADOR_data = df["Moderador"]
+# SEXO_data = df["Sexo"]
+# CORREO_data = df["Correo"]
+# CELULAR_data = df["Celular"]
+# SALA_data = df["Sala"]
+# CORREO_ALTERNATIVO_data = df["correo alternativo"]
+# SALA2_data = df["sala 2"]
+
+
 PAIS = []
 INSTITUCION = []
-MODALIDAD = []
-AREA = []
-RAMA = []
+TIPO = []
+AREA_DESEADA = []
+AREA_ALTERNATIVA = []
 ID_MOD = []
 MODERADOR = []
 SEXO = []
@@ -64,61 +80,89 @@ def separar_opciones(cadena):
     return result
 
 def limpiar_numero(celular):
-    # Eliminar cualquier carácter que no sea un dígito
     solo_digitos = re.sub(r'\D', '', str(celular))
-    
-    # Tomar solo los primeros 10 dígitos
     return solo_digitos[-10:]
+
+
+
+
+
+# PAIS = []
+# INSTITUCION = []
+# TIPO = []
+# AREA_DESEADA = []
+# AREA_ALTERNATIVA = []
+# ID_MOD = []
+# MODERADOR = []
+# SEXO = []
+# CORREO = []
+# CELULAR = []
+# SALA = []
+# CORREO_ALTERNATIVO = []
+# SALA2 = []
+
 
 def Creacion_Archivo_SQL(data_en_conjunto, n, output_file):
     fields_to_print_in_order = [
-        "Pais", "Institucion", "Modalidad", "Area", "Rama", "ID_Mod",
+        "Pais", "Institucion","Tipo", "Area_Deseada","Area_Alternativa", "ID_Mod",
         "Moderador", "Sexo", "Correo", "Celular", "Sala", "Correo_Alternativo", "Sala2"
     ]
-
     sql_template = "INSERT INTO MODERADORES ({}) VALUES ({});"
-
-    with open(output_file, "w") as file:
+    with open(output_file, "w", encoding="utf-8") as file:
         for i in range(n):
             values = []
 
             for field in fields_to_print_in_order:
                 if field in data_en_conjunto:
-                    value = data_en_conjunto[field]
+                    value = data_en_conjunto[field][i]
                     if isinstance(value, list):
                         values.append(json.dumps(value[i], ensure_ascii=False))
+                    elif pd.isnull(value):
+                        values.append("NULL")
                     else:
-                        values.append(str(value))  
-
+                        values.append(f"'{value}'") 
             sql_statement = sql_template.format(", ".join(fields_to_print_in_order), ", ".join(values))
 
             file.write(sql_statement + "\n")
 
 
+
+
+# PAIS = []
+# INSTITUCION = []
+# TIPO = []
+# AREA_DESEADA = []
+# AREA_ALTERNATIVA = []
+# ID_MOD = []
+# MODERADOR = []
+# SEXO = []
+# CORREO = []
+# CELULAR = []
+# SALA = []
+# CORREO_ALTERNATIVO = []
+# SALA2 = []
+
+
  #  pais
 for field in PAIS_data:
     PAIS.append(field)
-#  institucion
 
+#  institucion
 for field in INSTITUCION_data:
     INSTITUCION.append(field)
 
- #  modalidad
+#   tipo 
+for field in TIPO_data:
+    TIPO.append(field)
 
-for field in MODALIDAD_data:
-    MODALIDAD.append(field)
+#  area deseada y area alternativa 
+for field in AREA_DESEADA_data:
+    AREA_DESEADA.append(field)
 
-
-#  area y rama
-for column in AREA_data:
-    split_column = column.split(":")
-    split_ramas = separar_opciones(split_column[1])
-    AREA.append(split_column[0])
-    RAMA.append(split_ramas)
-
+for field in AREA_ALTERNATIVA_data:
+    AREA_ALTERNATIVA.append(field)
 
 # id_mod
-
 for field in ID_MOD_data:
     if math.isnan(field):
         formatted_field = "NULL"
@@ -127,12 +171,10 @@ for field in ID_MOD_data:
     ID_MOD.append(formatted_field)
     
  #  moderador
-
 for field in MODERADOR_data:
     MODERADOR.append(field)
 
  # sexo                                               
-
 for field in SEXO_data:
     SEXO.append(field)
 
@@ -146,7 +188,6 @@ for field in CELULAR_data:
     CELULAR.append(cleaned_celular)
 
  #  sala                                           
-
 for field in SALA_data:
     SALA.append(field)
 
@@ -155,7 +196,6 @@ for field in CORREO_ALTERNATIVO_data:
     CORREO_ALTERNATIVO.append(field)
     
  #  sala 2                                          
-
 for field in SALA2_data:
     SALA2.append(field)
  #                                    _             _                          _     _            
@@ -167,22 +207,35 @@ for field in SALA2_data:
  #                                                                                                
                                                                                                 
 
+# PAIS = []
+# INSTITUCION = []
+# AREA_DESEADA = []
+# AREA_ALTERNATIVA = []
+# ID_MOD = []
+# MODERADOR = []
+# SEXO = []
+# CORREO = []
+# CELULAR = []
+# SALA = []
+# CORREO_ALTERNATIVO = []
+# SALA2 = []
+
 data_en_conjunto = {
         "Pais":PAIS ,
         "Institucion":INSTITUCION,
-        "Modalidad":MODALIDAD ,
-        "Area":AREA ,
-        "Rama":RAMA ,
-        "ID_Mod":ID_MOD ,
-        "Moderador":MODERADOR ,
-        "Sexo":SEXO ,
-        "Correo":CORREO ,
-        "Celular":CELULAR ,
-        "Sala":SALA ,
-        "Correo_Alternativo":CORREO_ALTERNATIVO ,
+        "Tipo":TIPO,
+        "Area_Deseada":AREA_DESEADA,
+        "Area_Alternativa":AREA_ALTERNATIVA ,
+        "ID_Mod":ID_MOD,
+        "Moderador":MODERADOR,
+        "Sexo":SEXO,
+        "Correo":CORREO,
+        "Celular":CELULAR,
+        "Sala":SALA,
+        "Correo_Alternativo":CORREO_ALTERNATIVO,
         "Sala2":SALA2
 }
 
 
-output_file = "output_mods.sql"
-Creacion_Archivo_SQL(data_en_conjunto, 215, output_file)
+output_file = "Moderadores.sql"
+Creacion_Archivo_SQL(data_en_conjunto, 77 , output_file)

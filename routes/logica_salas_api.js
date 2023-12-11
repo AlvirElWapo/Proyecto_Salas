@@ -13,6 +13,7 @@ let ponenciasFinalizadas = {
   inconclusas : [],
 }
 
+const moderadoresConectados = [];
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -21,6 +22,58 @@ app.get('/estado', (req, res) => {
   res.json(estadoCompartido);
 });
 
+app.get('/id_moderadores_conectados', (req, res) => {
+  res.json(moderadoresConectados);
+});
+
+
+// Ruta para recibir el ID_MOD y almacenarlo en la variable global.
+app.post('/moderador_activo', (req, res) => {
+  const { ID_MOD } = req.body;
+  console.log(`ID_MOD recibido: ${ID_MOD}`);
+<<<<<<< HEAD
+  // Check if ID_MOD already exists in the array
+  const isAlreadyConnected = moderadoresConectados.some((mod) => mod.ID_Mod === ID_MOD);
+  if (!isAlreadyConnected) {
+    // If it doesn't exist, push it to the array
+    moderadoresConectados.push({ ID_Mod: ID_MOD });
+    console.log('Moderadores conectados:', moderadoresConectados);
+  }else
+  {
+    console.log(`USUARIO ${ID_MOD} Re-Inició Sesión, nada por hacer...`)
+  }
+  res.status(200).send('ID_MOD recibido correctamente.');
+});
+
+
+app.get('/obtener_moderadores_activos', (req, res) => {
+  console.log("-------------------------------------------------------------------------")
+  console.log("MODERADORES ACTIVOS: " + `${moderadoresConectados}`);
+  console.log("-------------------------------------------------------------------------")
+  res.json(moderadoresConectados);
+});
+
+=======
+
+  // Verifica si el ID_MOD ya está en la lista.
+  const existeModerador = moderadoresConectados.some((moderador) => moderador.ID_Mod === ID_MOD);
+
+  if (!existeModerador) {
+    // Almacena el ID_MOD en la variable global si no existe.
+    moderadoresConectados.push({ ID_Mod: ID_MOD, Estado: 'Conectado' });
+    // Muestra la lista de moderadores conectados en la consola del servidor.
+    console.log('Moderadores conectados:', moderadoresConectados);
+    // Responde con un mensaje para indicar que se recibió el ID_MOD.
+    res.status(200).send('ID_MOD recibido correctamente.');
+  } else {
+    console.log('El moderador ya está conectado:', ID_MOD);
+    // Responde con un mensaje para indicar que el moderador ya está conectado.
+    res.status(200).send('El moderador ya está conectado.');
+  }
+});
+
+
+>>>>>>> 1f0cd08b6e9717d20056224a078319e6e43ac7e4
 app.post('/activar_Sala', (req, res) => {
   const { ID_tra } = req.body;
   console.log("Activando PONENCIA", ID_tra);

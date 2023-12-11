@@ -3,7 +3,7 @@ from datetime import datetime
 import re
 import json
 
-ponencias_documento = './Programa_Delfín_bdd.xlsx'
+ponencias_documento = './db/carga_bdd/Ponencia.xlsx'
 df = pd.read_excel(ponencias_documento)
 
  #   _____      _                                 
@@ -36,31 +36,11 @@ FECHA_data = df["Fecha"]
 DIA_data = df["Dia"]
 TURNO_data = df["Turno"]
 BLOQUE_data = df["Bloque"]
-SALON_data = df["Salon"]
+IDENTIFICADOR_SALON_data = df["Identificador_Salon"]
 UBICACION_data = df["Ubicacion"]
 SEDE_data = df["Sede"]
+SALON_data = df["Salon"]
 
-#  /$$      /$$                 /$$                                    /$$                                        
-# | $$$    /$$$                | $$                                   | $$                                        
-# | $$$$  /$$$$  /$$$$$$   /$$$$$$$  /$$$$$$   /$$$$$$  /$$$$$$   /$$$$$$$  /$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
-# | $$ $$/$$ $$ /$$__  $$ /$$__  $$ /$$__  $$ /$$__  $$|____  $$ /$$__  $$ /$$__  $$ /$$__  $$ /$$__  $$ /$$_____/
-# | $$  $$$| $$| $$  \ $$| $$  | $$| $$$$$$$$| $$  \__/ /$$$$$$$| $$  | $$| $$  \ $$| $$  \__/| $$$$$$$$|  $$$$$$ 
-# | $$\  $ | $$| $$  | $$| $$  | $$| $$_____/| $$      /$$__  $$| $$  | $$| $$  | $$| $$      | $$_____/ \____  $$
-# | $$ \/  | $$|  $$$$$$/|  $$$$$$$|  $$$$$$$| $$     |  $$$$$$$|  $$$$$$$|  $$$$$$/| $$      |  $$$$$$$ /$$$$$$$/
-# |__/     |__/ \______/  \_______/ \_______/|__/      \_______/ \_______/ \______/ |__/       \_______/|_______/ 
-#                                                                                                                 
-
-# PAIS_data = df["País"]
-# INSTITUCION_data = df["Institución"]
-# MODALIDAD_data = df["Modalidad"]
-# AREA_data = df["Área"]
-# ID_MOD_data = df["ID_Mod"]
-# MODERADOR_data = df["Moderador"]
-# SEXO_data = df["Sexo"]
-# CORREO_data = df["Correo"]
-# CELULAR_data = df["Celular"]
-# SALA_data = df["Sala"]
-#
  #                               _           
  #     /\                       | |          
  #    /  \   _ __ _ __ ___  __ _| | ___  ___ 
@@ -95,32 +75,10 @@ FECHA = []
 DIA = []
 TURNO = []
 BLOQUE = [] 
-SALON = [] 
+IDENTIFICADOR_SALON = [] 
 UBICACION = [] 
 SEDE = [] 
-
-#  /$$      /$$                 /$$                                    /$$                                        
-# | $$$    /$$$                | $$                                   | $$                                        
-# | $$$$  /$$$$  /$$$$$$   /$$$$$$$  /$$$$$$   /$$$$$$  /$$$$$$   /$$$$$$$  /$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
-# | $$ $$/$$ $$ /$$__  $$ /$$__  $$ /$$__  $$ /$$__  $$|____  $$ /$$__  $$ /$$__  $$ /$$__  $$ /$$__  $$ /$$_____/
-# | $$  $$$| $$| $$  \ $$| $$  | $$| $$$$$$$$| $$  \__/ /$$$$$$$| $$  | $$| $$  \ $$| $$  \__/| $$$$$$$$|  $$$$$$ 
-# | $$\  $ | $$| $$  | $$| $$  | $$| $$_____/| $$      /$$__  $$| $$  | $$| $$  | $$| $$      | $$_____/ \____  $$
-# | $$ \/  | $$|  $$$$$$/|  $$$$$$$|  $$$$$$$| $$     |  $$$$$$$|  $$$$$$$|  $$$$$$/| $$      |  $$$$$$$ /$$$$$$$/
-# |__/     |__/ \______/  \_______/ \_______/|__/      \_______/ \_______/ \______/ |__/       \_______/|_______/ 
-#                                                                                                                 
-
-PAIS = []
-INSTITUCION = []
-MODALIDAD = []
-AREA = []
-ID_MOD = []
-MODERADOR = []
-SEXO = []
-CORREO = []
-CELULAR = []
-SALA = []
-#Correo Alternativo
-#Sala 2
+SALON = [] 
 
 
  #  ______                _                       
@@ -159,27 +117,42 @@ def Creacion_Archivo_SQL(data_en_conjunto, n, output_file):
         "Dia",
         "Turno",
         "Bloque",
-        "Salon",
+        "Identificador_Salon",
         "Ubicacion",
-        "Sede"]
+        "Sede",
+        "Salon"]
 
     sql_template = "INSERT INTO PONENCIAS ({}) VALUES ({});"
 
-    with open(output_file, "w") as file:
+
+    def format_value(value):
+        if isinstance(value, (list, dict)):
+            # Para valores de tipo lista o diccionario, como JSON, agregamos comillas simples
+            #formatted_value = json.dumps(value, ensure_ascii=False)
+            formatted_value = f"'{json.dumps(value, ensure_ascii=False)}'"
+
+            return formatted_value
+        elif isinstance(value, str):
+            # Para valores de cadena, agregamos comillas simples
+            return f'"{value}"'
+        else:
+            # Dejamos otros valores sin comillas
+            return str(value)
+
+    with open(output_file, "w", encoding="utf-8") as file:
         for i in range(n):
             values = []
 
             for field in fields_to_print_in_order:
                 if field in data_en_conjunto:
                     value = data_en_conjunto[field]
-                    if isinstance(value, list):
-                        values.append(json.dumps(value[i], ensure_ascii=False))
-                    else:
-                        values.append(str(value))  
+                    formatted_value = format_value(value[i])
+                    values.append(formatted_value)
 
             sql_statement = sql_template.format(", ".join(fields_to_print_in_order), ", ".join(values))
 
             file.write(sql_statement + "\n")
+
 
 
  #  _____ _____ _______        
@@ -347,12 +320,14 @@ for field in TURNO_data:
     TURNO.append(field)
 for field in BLOQUE_data:
     BLOQUE.append(field)
-for field in SALON_data:
-    SALON.append(field)
+for field in IDENTIFICADOR_SALON_data:
+    IDENTIFICADOR_SALON.append(field)
 for field in UBICACION_data:
     UBICACION.append(field)
 for field in SEDE_data:
     SEDE.append(field)
+for field in SALON_data:
+    SALON.append(field)
 
  #                                    _             _                          _     _            
  #     /\                            | |           | |          /\            | |   (_)           
@@ -379,13 +354,14 @@ data_en_conjunto = {
         "Dia":DIA ,
         "Turno":TURNO ,
         "Bloque":BLOQUE ,
-        "Salon":SALON ,
+        "Identificador_Salon":IDENTIFICADOR_SALON,
         "Ubicacion":UBICACION ,
-        "Sede":SEDE
-}
+        "Sede":SEDE,
+        "Salon":SALON
+        }
 
 
-output_file = "output.sql"
-Creacion_Archivo_SQL(data_en_conjunto, 1743, output_file)
+output_file = "Ponencias.sql"
+Creacion_Archivo_SQL(data_en_conjunto, 1155, output_file)
 
 

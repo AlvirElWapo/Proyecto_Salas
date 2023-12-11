@@ -1,18 +1,11 @@
---//////////////////////////////////////////////////////////--
---∙∙·▫▫ᵒᴼᵒ▫ₒₒ▫ᵒᴼᵒ▫ₒₒ▫ᵒᴼᵒ 𝘾𝙍𝙀𝘼𝘾𝙄Ó𝙉 𝘿𝙀 𝘽𝘿𝘿 ᵒᴼᵒ▫ₒₒ▫ᵒᴼᵒ▫ₒₒ▫ᵒᴼᵒ▫▫·∙∙--
---//////////////////////////////////////////////////////////--
-
 DROP DATABASE SALAS_DB;
 CREATE DATABASE IF NOT EXISTS SALAS_DB; 
 USE SALAS_DB;
---//////////////////////////////////////////////////////////--
--- ♪ღ♪*•.¸¸.•*¨¨*•.♪ ℂℝ𝔼𝔸ℂ𝕀Óℕ 𝔻𝔼 𝕋𝔸𝔹𝕃𝔸𝕊 ♪ღ♪*•.¸¸.•*¨¨*•.♪ღ♪ --
---//////////////////////////////////////////////////////////--
 
 CREATE TABLE IF NOT EXISTS USUARIO 
 (
   usuario_id INT AUTO_INCREMENT PRIMARY KEY,
-  tipo_usuario ENUM('alumno', 'ponente', 'administrador') NOT NULL,
+  tipo_usuario ENUM('moderador', 'mauro', 'administrador') NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   email VARCHAR(100) NOT NULL UNIQUE,
   nombre_completo VARCHAR(100) NOT NULL,
@@ -42,18 +35,19 @@ CREATE TABLE IF NOT EXISTS PONENCIAS(
     Dia VARCHAR(20),
     Turno VARCHAR(20),
     Bloque TEXT,
-    Salon TEXT,
+    Identificador_Salon TEXT,
     Ubicacion TEXT,
     Sede TEXT,
-    Asistencia JSON DEFAULT NULL
+    Asistencia JSON DEFAULT NULL,
+    Salon TEXT
 );
 
 CREATE TABLE IF NOT EXISTS MODERADORES (
     Pais TEXT,
     Institucion TEXT,
-    Modalidad TEXT,
-    Area TEXT,
-    Rama JSON,
+    Tipo TEXT,
+    Area_Deseada TEXT,
+    Area_Alternativa TEXT,
     ID_Mod VARCHAR(5),
     Moderador TEXT,
     Sexo TEXT,
@@ -61,14 +55,8 @@ CREATE TABLE IF NOT EXISTS MODERADORES (
     Celular TEXT,
     Sala TEXT,
     Correo_Alternativo TEXT,
-    Sala2 TEXT,
-    Asistencia VARCHAR(2) DEFAULT NULL
+    Sala2 TEXT
 );
-
-
---//////////////////////////////////////////////////////////--
---∙∙·▫▫ᵒᴼᵒ▫ₒₒ▫ᵒᴼᵒ▫ₒₒ▫ᵒᴼᵒ  CREACION DE VISTAS  ᵒᴼᵒ▫ₒₒ▫ᵒᴼᵒ▫ₒₒ▫ᵒᴼᵒ▫▫·∙∙--
---//////////////////////////////////////////////////////////--
 
 CREATE VIEW Ring_Graph AS
 SELECT AREA, COUNT(AREA) AS NoDeAreas 
@@ -92,9 +80,5 @@ SELECT ID_Tra, NoPonentes, Ponentes, ID_Pons, Salon FROM PONENCIAS;
 CREATE VIEW TABLA_MODERADORES AS 
 SELECT ID_Mod, Moderador, Institucion FROM MODERADORES;
 
- 
---//////////////////////////////////////////////////////////--
---∙∙·▫▫ᵒᴼᵒ▫ₒₒ▫ᵒᴼᵒ▫ₒₒ▫ᵒᴼᵒ ADICIÓN DE OBJETOS TEMPORALES ᵒᴼᵒ▫ₒₒ▫ᵒᴼᵒ▫ₒₒ▫ᵒᴼᵒ▫▫·∙∙--
---//////////////////////////////////////////////////////////--
 
 
