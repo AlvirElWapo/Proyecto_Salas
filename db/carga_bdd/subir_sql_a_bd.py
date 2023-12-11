@@ -14,14 +14,13 @@ sql_file_path = sys.argv[1]
 #print("Directorio de trabajo actual:", os.getcwd())
 
 # Connection parameters
-host = "localhost"
+host = "172.17.0.2"
 user = "root"
-password = "basedatos1"
-port = 3307
-database = "salas_db2"
+password = "6327"
+database = "SALAS_DB"
 
 # Connect to the MySQL server
-conn = mysql.connector.connect(host=host, user=user, password=password, port=port, database=database)
+conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
 
 # Create a cursor object
 cursor = conn.cursor()
