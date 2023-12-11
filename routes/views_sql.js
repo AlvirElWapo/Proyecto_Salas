@@ -325,8 +325,6 @@ app.post('/asistencia_mods', (req, res) => {
   });
 });
 
-<<<<<<< HEAD
-=======
 app.post('/agregarmoderadore', (req, res) => {
   console.log("recieved moderadore request");
   const { Moderador, Asistencia } = req.body;
@@ -341,7 +339,6 @@ app.post('/agregarmoderadore', (req, res) => {
 
 
 
->>>>>>> 55140f31ab4207acf1cb739251cdf811544a1b61
 app.post('/informacion_de_moderadores', (req, res) => {
   const { Id_Mod } = req.body;
   console.log(Id_Mod);
