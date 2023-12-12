@@ -1,10 +1,11 @@
 const mysql = require('mysql2');
 
 const pool = mysql.createPool({
-  host: 'localhost',
+  host: '2.tcp.ngrok.io',
   user: 'root',
-  database: 'SALAS_DB2',
-  port: 3307,
+  password: '6327',
+  database: 'SALAS_DB',
+  port: 11914,
 });
 
 module.exports = pool;
