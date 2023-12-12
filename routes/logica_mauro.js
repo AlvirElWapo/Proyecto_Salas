@@ -144,24 +144,54 @@ app.post('/autorizar_sala', (req, res) => {
 });
 
 // Conclude a Sala
-app.post('/finalizar_sala', (req, res) => {
-  const { id_sala } = req.body;
+//
+//
+//
 
-  if (isSalaInState(id_sala, Salas_Autorizadas)) {
-    // Copy data from Salas_Autorizadas to Salas_Concluidas
-    const index = Salas_Autorizadas.id_salas.indexOf(id_sala);
-    if (index > -1) {
-      Salas_Concluidas.id_salas.push(Salas_Autorizadas.id_salas[index]);
-      Salas_Concluidas.Moderador.push(Salas_Autorizadas.Moderador[index]);
-      Salas_Concluidas.Ponencias.push(Salas_Autorizadas.Ponencias[index]);
 
-      res.json({ message: 'Sala concluida con éxito' });
-    } else {
-      res.status(400).send('Sala no encontrada en autorizadas');
+const get_sala_por_mod= (Id_Trab, callback) => {
+  db.query(
+    'SELECT Sala FROM MODERADORES WHERE MODERADOR = ?;',
+    [Id_Trab],
+    (err, sqlRes) => {
+      if (err) {
+        console.error(err);
+        callback("sql_error");
+      } else if (sqlRes.length > 0) {
+        callback(null, sqlRes);
+      } else {
+        callback("No data available for the specified Id_Trab equiposbysalon");
+      }
     }
-  } else {
-    res.status(400).send('Sala no está autorizada');
-  }
+  );
+};
+
+
+app.post('/finalizar_sala', (req, res) => {
+    const { moderador } = req.body; // Assuming 'moderador' is sent in the request body
+    // First, find the Sala associated with the Moderador
+    get_sala_por_mod(moderador, (err, sqlRes) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send("Error fetching Sala for Moderador");
+        }
+
+        if (sqlRes && sqlRes.length > 0) {
+            const sala = sqlRes[0].Sala; // Assuming the response contains the Sala
+            // Now proceed to finalize the Sala
+            const index = Salas_Autorizadas.id_salas.indexOf(sala);
+            if (index > -1) {
+                Salas_Concluidas.id_salas.push(Salas_Autorizadas.id_salas[index]);
+                Salas_Concluidas.Moderador.push(Salas_Autorizadas.Moderador[index]);
+                Salas_Concluidas.Ponencias.push(Salas_Autorizadas.Ponencias[index]);
+                res.json({ message: 'Sala concluida con éxito' });
+            } else {
+                res.status(400).send('Sala no encontrada en autorizadas');
+            }
+        } else {
+            res.status(400).send("No data available for the specified Moderador");
+        }
+    });
 });
 
 
