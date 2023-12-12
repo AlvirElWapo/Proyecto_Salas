@@ -28,17 +28,17 @@ app.get('/id_moderadores_conectados', (req, res) => {
 
 
 app.post('/moderador_activo', (req, res) => {
-  const { ID_MOD } = req.body;
-  console.log(`ID_MOD recibido: ${ID_MOD}`);
+  const { ID_Mod } = req.body;
+  console.log(`ID_MOD recibido: ${ID_Mod}`);
   // Check if ID_MOD already exists in the array
-  const isAlreadyConnected = moderadoresConectados.some((mod) => mod.ID_Mod === ID_MOD);
+  const isAlreadyConnected = moderadoresConectados.some((mod) => mod.ID_Mod === ID_Mod);
   if (!isAlreadyConnected) {
     // If it doesn't exist, push it to the array
-    moderadoresConectados.push({ ID_Mod: ID_MOD });
+    moderadoresConectados.push({ ID_Mod: ID_Mod});
     console.log('Moderadores conectados:', moderadoresConectados);
   }else
   {
-    console.log(`USUARIO ${ID_MOD} Re-Inició Sesión, nada por hacer...`)
+    console.log(`USUARIO ${ID_Mod} Re-Inició Sesión, nada por hacer...`)
   }
   res.status(200).send('ID_MOD recibido correctamente.');
 });
