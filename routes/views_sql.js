@@ -300,10 +300,10 @@ const getListaSedes = (callback) => {
   );
 };
 
-const getTitulosByID = (Id_Trab, callback) => {
+const getTitulosPonenciasByModerador = (Investigador, callback) => {
   db.query(
-    'SELECT Titulo FROM PONENCIAS WHERE ID_Tra= ?;',
-    [Id_Trab],
+    'SELECT Titulo FROM PONENCIAS WHERE Investigador= ?;',
+    [Investigador],
     (err, sqlRes) => {
       if (err) {
         console.error(err);
@@ -311,7 +311,7 @@ const getTitulosByID = (Id_Trab, callback) => {
       } else if (sqlRes.length > 0) {
         callback(null, sqlRes);
       } else {
-        callback("No data available for the specified Id_Trab get titulos by id");
+        callback("No data available for the specified Investigador get titulos by invest");
       }
     }
   );
@@ -578,10 +578,9 @@ app.post('/informacion_por_salones', (req, res) => {
 });
 
 
-app.post('/get_titulo', (req, res) => {
-  const { Salon } = req.body;
-  console.log(Salon);
-  getTitulosByID(Salon, (error, result) => 
+app.post('/get_titulos', (req, res) => {
+  const { Investigador } = req.body;
+  getTitulosPonenciasByModerador(Investigador, (error, result) => 
   {
     if (error) {
       console.error(error);
