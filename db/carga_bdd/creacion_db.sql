@@ -80,5 +80,6 @@ SELECT ID_Tra, NoPonentes, Ponentes, ID_Pons, Salon FROM PONENCIAS;
 CREATE VIEW TABLA_MODERADORES AS 
 SELECT ID_Mod, Moderador, Institucion FROM MODERADORES;
 
-
+INSERT INTO USUARIO (tipo_usuario, password_hash, email, nombre_completo, nombre_usuario)
+VALUES ('mauro', '$argon2id$v=19$m=65536,t=3,p=4$kPCKj/5bo4LfdlJrNHCSHg$xOVrwxe0bYeR1dg47uJmZvOw8/gcmxP+xsnLimKaKpg', 'mauro@example.com', 'Mauro', 'mauro');
 

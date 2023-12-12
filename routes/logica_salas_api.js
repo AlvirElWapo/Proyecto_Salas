@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+// Importa el módulo de pool de conexiones
+const db = require('../db/database_connection');
 
 const app = express();
 
@@ -26,20 +28,59 @@ app.get('/id_moderadores_conectados', (req, res) => {
   res.json(moderadoresConectados);
 });
 
+///*
+// Función para obtener las ponencias de un moderador
+const getPonenciasDelModerador = (Investigador, callback) => {
+  console.log("Obteniendo ponencias de: ", Investigador);
+  db.query(
+    'SELECT ID_TRA FROM PONENCIAS WHERE Investigador = ?',
+    [Investigador],
+    (err, sqlRes) => {
+      if (err) {
+        console.error(err);
+        callback("sql_error");
+      } else if (sqlRes.length > 0) {
+        callback(null, sqlRes);
+      } else {
+        callback("No hay datos disponibles para el moderador especificado");
+      }
+    }
+  );
+};
 
-// Ruta para recibir el ID_MOD y almacenarlo en la variable global.
+
+
+// Ruta para obtener las ponencias de un moderador
+app.post('/ponencias_del_moderador', (req, res) => {
+  const { Investigador } = req.body;
+  console.log(`Obtener ponencias de: ${Investigador}`);
+  getPonenciasDelModerador(Investigador, (error, result) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error interno del servidor');
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+//*/
+
+
+
+
 app.post('/moderador_activo', (req, res) => {
-  const { ID_MOD } = req.body;
-  console.log(`ID_MOD recibido: ${ID_MOD}`);
+  const { ID_Mod } = req.body;
+  console.log(`ID_MOD recibido: ${ID_Mod}`);
   // Check if ID_MOD already exists in the array
-  const isAlreadyConnected = moderadoresConectados.some((mod) => mod.ID_Mod === ID_MOD);
+  const isAlreadyConnected = moderadoresConectados.some((mod) => mod.ID_Mod === ID_Mod);
   if (!isAlreadyConnected) {
     // If it doesn't exist, push it to the array
-    moderadoresConectados.push({ ID_Mod: ID_MOD });
+    moderadoresConectados.push({ ID_Mod: ID_Mod});
     console.log('Moderadores conectados:', moderadoresConectados);
   }else
   {
-    console.log(`USUARIO ${ID_MOD} Re-Inició Sesión, nada por hacer...`)
+    console.log(`USUARIO ${ID_Mod} Re-Inició Sesión, nada por hacer...`)
   }
   res.status(200).send('ID_MOD recibido correctamente.');
 });
@@ -51,8 +92,8 @@ app.get('/obtener_moderadores_activos', (req, res) => {
   console.log("-------------------------------------------------------------------------")
   res.json(moderadoresConectados);
 
+  const ID_MOD = req.body.ID_MOD;
 
-  // Verifica si el ID_MOD ya está en la lista.
   const existeModerador = moderadoresConectados.some((moderador) => moderador.ID_Mod === ID_MOD);
 
   if (!existeModerador) {
@@ -107,16 +148,22 @@ app.post('/desactivar_Sala', (req, res) => {
 app.post('/concluir_Ponencia', (req, res) => {
   const { ID_tra } = req.body;
   console.log("Ponencia Concluida: ", ID_tra);
+  console.log("-------------------------------------------------------------------------")
+  
 
   const isInCompletadas = ponenciasFinalizadas.completadas.includes(ID_tra);
   const isInInconclusas = ponenciasFinalizadas.inconclusas.includes(ID_tra);
 
+  console.log("ponencias finalizadas"+ponenciasFinalizadas.completadas)
+
   if (!isInCompletadas && !isInInconclusas) {
     const isDuplicate = ponenciasFinalizadas.completadas.includes(ID_tra);
+    console.log("ponencias finalizadas"+ponenciasFinalizadas)
 
     if (!isDuplicate) {
       ponenciasFinalizadas.completadas.push(ID_tra);
       res.json(ponenciasFinalizadas);
+      console.log("ponencias finalizadas"+ponenciasFinalizadas)
     } else {
       console.log(ID_tra," YA FUE CONCLUIDA.");
       res.status(400).json({ error: "ID_tra YA FUE CONCLUIDA." });
