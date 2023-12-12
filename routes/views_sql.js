@@ -220,7 +220,7 @@ const getEquiposByTrabId = (Id_Trab, callback) => {
       } else if (sqlRes.length > 0) {
         callback(null, sqlRes);
       } else {
-        callback("No data available for the specified Id_Trab");
+        callback("No data available for the specified Id_Trab equposbyid");
       }
     }
   );
@@ -311,7 +311,7 @@ const getTitulosByID = (Id_Trab, callback) => {
       } else if (sqlRes.length > 0) {
         callback(null, sqlRes);
       } else {
-        callback("No data available for the specified Id_Trab");
+        callback("No data available for the specified Id_Trab get titulos by id");
       }
     }
   );
@@ -329,7 +329,7 @@ const getEquiposBySalon = (Id_Trab, callback) => {
       } else if (sqlRes.length > 0) {
         callback(null, sqlRes);
       } else {
-        callback("No data available for the specified Id_Trab");
+        callback("No data available for the specified Id_Trab equiposbysalon");
       }
     }
   );
@@ -466,11 +466,6 @@ const GET_TOTAL_MOD= (callback) => {
 };
 
 
-
-
-
-
-
 app.get('/total_ponencias', (req, res) => {
   GET_TOTAL_PON((error, result) => {
     if (error) {
@@ -520,7 +515,7 @@ app.get('/fechas', (req, res) => {
 
 app.post('/informacion_de_equipos', (req, res) => {
   const { Id_Trab } = req.body;
-  console.log(Id_Trab)
+  console.log("inf-equ "+Id_Trab)
   getEquiposByTrabId(Id_Trab, (error, result) => {
     if (error) {
       console.error(error);
@@ -600,6 +595,7 @@ app.post('/get_titulo', (req, res) => {
 app.post('/asistencia', (req, res) => {
   console.log("recieved asistencia request");
   const { Id_Trab, Asistencia } = req.body;
+  console.log("idtrabasis2122 "+Id_Trab);
   Actualizar_lista_asistencias(Id_Trab, Asistencia, (err, result) => {
     if (err) {
       return res.status(500).json({ error: err });

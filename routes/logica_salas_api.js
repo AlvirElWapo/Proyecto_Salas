@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+// Importa el módulo de pool de conexiones
+const db = require('../db/database_connection');
 
 const app = express();
 
@@ -26,6 +28,46 @@ app.get('/id_moderadores_conectados', (req, res) => {
   res.json(moderadoresConectados);
 });
 
+///*
+// Función para obtener las ponencias de un moderador
+const getPonenciasDelModerador = (Investigador, callback) => {
+  console.log("Obteniendo ponencias de: ", Investigador);
+  db.query(
+    'SELECT ID_TRA FROM PONENCIAS WHERE Investigador = ?',
+    [Investigador],
+    (err, sqlRes) => {
+      if (err) {
+        console.error(err);
+        callback("sql_error");
+      } else if (sqlRes.length > 0) {
+        callback(null, sqlRes);
+      } else {
+        callback("No hay datos disponibles para el moderador especificado");
+      }
+    }
+  );
+};
+
+
+
+// Ruta para obtener las ponencias de un moderador
+app.post('/ponencias_del_moderador', (req, res) => {
+  const { Investigador } = req.body;
+  console.log(`Obtener ponencias de: ${Investigador}`);
+  getPonenciasDelModerador(Investigador, (error, result) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error interno del servidor');
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+//*/
+
+
+
 
 app.post('/moderador_activo', (req, res) => {
   const { ID_MOD } = req.body;
@@ -49,6 +91,9 @@ app.get('/obtener_moderadores_activos', (req, res) => {
   console.log("MODERADORES ACTIVOS: " + `${moderadoresConectados}`);
   console.log("-------------------------------------------------------------------------")
   res.json(moderadoresConectados);
+
+  const ID_MOD = req.body.ID_MOD;
+
   const existeModerador = moderadoresConectados.some((moderador) => moderador.ID_Mod === ID_MOD);
 
   if (!existeModerador) {
@@ -103,16 +148,22 @@ app.post('/desactivar_Sala', (req, res) => {
 app.post('/concluir_Ponencia', (req, res) => {
   const { ID_tra } = req.body;
   console.log("Ponencia Concluida: ", ID_tra);
+  console.log("-------------------------------------------------------------------------")
+  
 
   const isInCompletadas = ponenciasFinalizadas.completadas.includes(ID_tra);
   const isInInconclusas = ponenciasFinalizadas.inconclusas.includes(ID_tra);
 
+  console.log("ponencias finalizadas"+ponenciasFinalizadas.completadas)
+
   if (!isInCompletadas && !isInInconclusas) {
     const isDuplicate = ponenciasFinalizadas.completadas.includes(ID_tra);
+    console.log("ponencias finalizadas"+ponenciasFinalizadas)
 
     if (!isDuplicate) {
       ponenciasFinalizadas.completadas.push(ID_tra);
       res.json(ponenciasFinalizadas);
+      console.log("ponencias finalizadas"+ponenciasFinalizadas)
     } else {
       console.log(ID_tra," YA FUE CONCLUIDA.");
       res.status(400).json({ error: "ID_tra YA FUE CONCLUIDA." });
