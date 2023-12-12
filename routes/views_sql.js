@@ -266,7 +266,7 @@ const getModeradoresByEdificio= (edif, callback) => {
 
 const getModeradoresByEdificioEID = (edif, ID_Mod, callback) => {
   db.query(
-    'SELECT m.* FROM MODERADORES m, PONENCIAS p WHERE m.Sala = p.Identificador_Salon AND p.UBICACION = ? AND m.ID_Mod = ? GROUP BY m.MODERADOR;',
+    'SELECT m.*, p.Salon FROM MODERADORES m, PONENCIAS p WHERE m.Sala = p.Identificador_Salon AND p.UBICACION = ? AND m.ID_Mod = ? GROUP BY m.MODERADOR;',
     [edif, ID_Mod],
     (err, sqlRes) => {
       if (err) {

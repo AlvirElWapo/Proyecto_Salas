@@ -24,6 +24,7 @@ app.post('/login', (req, res) => {
           req.session.user_type = modUser.tipo_usuario;
           req.session.email = modUser.email;
           req.session.id_mod = modUser.id_mod;
+          req.session.sala = modUser.sala
 
           // Send user data back to the client
           res.json({
@@ -33,7 +34,8 @@ app.post('/login', (req, res) => {
               full_name: req.session.full_name,
               user_type: req.session.user_type,
               email: req.session.email,
-              id: req.session.id_mod
+              id: req.session.id_mod,
+              sala: req.session.sala
             }
           });
         }
@@ -151,7 +153,7 @@ function get_pwd_hash(username_or_email, callback) {
 function validateModerador(username_or_email, password, callback) {
   // Modify the SQL query to retrieve the required fields (full name and email)
   db.query(
-    'SELECT ID_Mod, Moderador, Correo FROM MODERADORES WHERE Moderador = ? OR Correo = ?',
+    'SELECT ID_Mod, Moderador, Correo, Sala FROM MODERADORES WHERE Moderador = ? OR Correo = ?',
     [username_or_email, username_or_email],
     (err, sql_res) => {
       if (err) {
@@ -165,7 +167,8 @@ function validateModerador(username_or_email, password, callback) {
           nombre_completo: sql_res[0].Moderador, // Use the Moderador field as full name
           tipo_usuario: 'moderador',
           email: sql_res[0].Correo, // Use the Correo field as email
-          id_mod: sql_res[0].ID_Mod
+          id_mod: sql_res[0].ID_Mod,
+          sala: sql_res[0].Sala
         };
         return callback(null, modUser);
       } else {

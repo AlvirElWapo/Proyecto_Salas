@@ -28,7 +28,6 @@ app.get('/id_moderadores_conectados', (req, res) => {
   res.json(moderadoresConectados);
 });
 
-///*
 // Función para obtener las ponencias de un moderador
 const getPonenciasDelModerador = (Investigador, callback) => {
   console.log("Obteniendo ponencias de: ", Investigador);
@@ -48,7 +47,37 @@ const getPonenciasDelModerador = (Investigador, callback) => {
   );
 };
 
+const getNoPonentes = (ID_TRA, callback) => {
+  console.log("Obteniendo ponencias de: ", ID_TRA);
+  db.query(
+    'SELECT NOPONENTES FROM PONENCIAS WHERE ID_TRA = ?',
+    [ID_TRA],
+    (err, sqlRes) => {
+      if (err) {
+        console.error(err);
+        callback("sql_error");
+      } else if (sqlRes.length > 0) {
+        callback(null, sqlRes);
+      } else {
+        callback("No hay datos disponibles para el id especificado (asistencia individual))");
+      }
+    }
+  );
+};
 
+app.post('/numero_ponentes', (req, res) => {
+  const { ID_TRA } = req.body;
+  console.log(`ASISTENCIA INDIVIDUAL de: ${ID_TRA}`);
+  getNoPonentes(ID_TRA, (error, result) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error interno del servidor');
+    } else {
+      res.json(result);
+      console.log("Numero de ponentes: ", result);
+    }
+  });
+});
 
 // Ruta para obtener las ponencias de un moderador
 app.post('/ponencias_del_moderador', (req, res) => {
@@ -63,11 +92,6 @@ app.post('/ponencias_del_moderador', (req, res) => {
     }
   });
 });
-
-//*/
-
-
-
 
 app.post('/moderador_activo', (req, res) => {
   const { ID_Mod } = req.body;
@@ -154,16 +178,13 @@ app.post('/concluir_Ponencia', (req, res) => {
   const isInCompletadas = ponenciasFinalizadas.completadas.includes(ID_tra);
   const isInInconclusas = ponenciasFinalizadas.inconclusas.includes(ID_tra);
 
-  console.log("ponencias finalizadas"+ponenciasFinalizadas.completadas)
 
   if (!isInCompletadas && !isInInconclusas) {
     const isDuplicate = ponenciasFinalizadas.completadas.includes(ID_tra);
-    console.log("ponencias finalizadas"+ponenciasFinalizadas)
 
     if (!isDuplicate) {
       ponenciasFinalizadas.completadas.push(ID_tra);
       res.json(ponenciasFinalizadas);
-      console.log("ponencias finalizadas"+ponenciasFinalizadas)
     } else {
       console.log(ID_tra," YA FUE CONCLUIDA.");
       res.status(400).json({ error: "ID_tra YA FUE CONCLUIDA." });
@@ -176,7 +197,6 @@ app.post('/concluir_Ponencia', (req, res) => {
 
 app.post('/Ponencia_inconclusa', (req, res) => {
   const { ID_tra } = req.body;
-  console.log("PONENCIA CANCELADA: ", ID_tra);
 
   const isInCompletadas = ponenciasFinalizadas.completadas.includes(ID_tra);
   const isInInconclusas = ponenciasFinalizadas.inconclusas.includes(ID_tra);
@@ -188,11 +208,9 @@ app.post('/Ponencia_inconclusa', (req, res) => {
       ponenciasFinalizadas.inconclusas.push(ID_tra);
       res.json(ponenciasFinalizadas);
     } else {
-      console.log(ID_tra," YA FUE CONCLUIDA.");
       res.status(400).json({ error: "ID_tra YA FUE CONCLUIDA." });
     }
   } else {
-    console.log(ID_tra," TRAMPA INCONCLUSA.");
     res.status(400).json({ error: "NO SE PUEDE RESUMIR UNA SESION CUANDO ESTE FUE CANCELADO, ESTE INCIDENTE TENDRA CONSECUENCIAS." });
   }
 });
